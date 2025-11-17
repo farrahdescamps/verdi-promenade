@@ -1,0 +1,107 @@
+.
+├── index.html
+├── package-lock.json
+├── package.json
+├── public
+│   └── _redirects
+├── README.md
+├── src
+│   ├── App.tsx
+│   ├── components
+│   │   ├── BottomNavigation.tsx
+│   │   ├── CardActivity.tsx
+│   │   ├── CardStack.tsx
+│   │   ├── DebugButton.tsx
+│   │   ├── Header.tsx
+│   │   ├── HorizontalScroll.tsx
+│   │   ├── icons
+│   │   ├── Map
+│   │   ├── TalkWithOceaneModal.tsx
+│   │   ├── ui
+│   │   ├── VideoCache.tsx
+│   │   └── VideoPlayer.tsx
+│   ├── config.ts
+│   ├── constants
+│   │   └── cities.ts
+│   ├── contexts
+│   │   ├── LanguageContext.tsx
+│   │   └── SessionContext.tsx
+│   ├── hooks
+│   │   └── useVideoPreloader.ts
+│   ├── index.tsx
+│   ├── lib
+│   │   └── utils.ts
+│   ├── locales
+│   │   ├── fr.json
+│   │   └── index.ts
+│   ├── screens
+│   │   ├── Onboarding
+│   │   ├── PageActivite
+│   │   ├── PageChatProfiling
+│   │   ├── PageChoixIntro
+│   │   ├── PageConnexion
+│   │   ├── PageConversationList
+│   │   ├── PageCrerUnCompte
+│   │   ├── PageExplorer
+│   │   ├── PageLangue
+│   │   ├── PageMonAventure
+│   │   ├── PagePassword
+│   │   ├── PagePasswordReset
+│   │   └── SplashScreen
+│   ├── services
+│   │   ├── activityService.ts
+│   │   ├── conversationService.ts
+│   │   ├── languageService.ts
+│   │   ├── sessionService.ts
+│   │   ├── themeService.ts
+│   │   └── videoService.ts
+│   ├── styles
+│   │   └── components.css
+│   └── utils
+│       ├── conversationLock.ts
+│       ├── ensureConversation.ts
+│       └── viewport.ts
+├── static
+│   └── img
+│       ├── check-box.svg
+│       ├── frame-269.svg
+│       ├── google.png
+│       ├── Group copy copy.svg
+│       ├── Group copy.svg
+│       ├── Group.svg
+│       ├── image.svg
+│       ├── lign1-1.svg
+│       ├── logo-app-1.svg
+│       ├── logo-app-2.svg
+│       ├── logo-app-3.svg
+│       ├── logo-app-4.svg
+│       ├── logo-app.png
+│       ├── map-bg.png
+│       ├── map-pin.svg
+│       ├── maritime.jpg
+│       ├── panorama.jpg
+│       ├── pause-gourmande.jpg
+│       ├── right-side-4.png
+│       ├── right-side-5.png
+│       ├── space-mdp.svg
+│       ├── spirituel.jpg
+│       ├── subtract-2.svg
+│       ├── subtract-3.svg
+│       ├── subtract.svg
+│       ├── time-4.svg
+│       ├── time-5.svg
+│       ├── vector-1.svg
+│       ├── vector-2.svg
+│       ├── vector-4.svg
+│       ├── vector-5.svg
+│       ├── vector-6.svg
+│       └── vector.svg
+├── structure.txt
+├── tailwind.config.js
+├── tailwind.css
+├── tsconfig.app.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts
+
+31 directories, 74 files

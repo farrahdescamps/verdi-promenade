@@ -1,0 +1,407 @@
+import React, { useState, useCallback, useEffect } from 'react';
+import { Button } from '../../components/ui/button';
+import { fetchSlideshowDetails, SlideshowData } from '../../services/activityService';
+import { useTranslation } from '../../locales';
+
+interface SlideshowViewProps {
+  activityId: string;
+  poiId: string;
+  currentLanguage: string;
+  activityColor: string;
+  onClose: () => void;
+  onError: (error: string) => void;
+  onSlideChange?: (index: number) => void;
+  poiVideoUrl?: string;
+  poiDescription?: string;
+  initialSlideIndex?: number;
+}
+
+export const SlideshowView: React.FC<SlideshowViewProps> = ({
+  activityId,
+  poiId,
+  currentLanguage,
+  activityColor,
+  onClose,
+  onError,
+  onSlideChange,
+  poiVideoUrl,
+  poiDescription,
+  initialSlideIndex = 0
+}) => {
+  const { t } = useTranslation();
+  const [slideshowDetails, setSlideshowDetails] = useState<SlideshowData | null>(null);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(initialSlideIndex);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [combinedSlides, setCombinedSlides] = useState<Array<{type: 'video' | 'image', url: string, caption?: string}>>([]);
+  
+  // États pour le swipe et l'autoplay
+  const [swipeStartX, setSwipeStartX] = useState(0);
+  const [swipeStartY, setSwipeStartY] = useState(0);
+  const [isSwipeActive, setIsSwipeActive] = useState(false);
+  const [hasManualSwipe, setHasManualSwipe] = useState(false);
+
+  // Charger les données du slideshow
+  const loadSlideshowData = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const data = await fetchSlideshowDetails(activityId, poiId, currentLanguage);
+      setSlideshowDetails(data);
+      
+      // Créer les slides combinés (vidéo POI + photos)
+      const slides = [];
+      
+      // Ajouter la vidéo du POI en premier si disponible
+      if (poiVideoUrl && poiVideoUrl.trim() !== '') {
+        slides.push({
+          type: 'video' as const,
+          url: poiVideoUrl,
+          caption: poiDescription || 'Vidéo du POI'
+        });
+      }
+      
+      // Ajouter les photos du slideshow
+      if (data.slideshow.photos) {
+        data.slideshow.photos.forEach(photo => {
+          slides.push({
+            type: 'image' as const,
+            url: photo.photo_url,
+            caption: photo.caption
+          });
+        });
+      }
+      
+      setCombinedSlides(slides);
+      setCurrentSlideIndex(0);
+
+
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : t('error.slideshowLoad');
+      setError(errorMessage);
+      onError(errorMessage);
+
+    } finally {
+      setLoading(false);
+    }
+  }, [activityId, poiId, currentLanguage, onError, poiVideoUrl]);
+
+  // Charger les données au montage
+  React.useEffect(() => {
+    loadSlideshowData();
+  }, [loadSlideshowData]);
+
+  // Réinitialiser l'autoplay après un délai après un swipe manuel
+  useEffect(() => {
+    if (hasManualSwipe) {
+      const timer = setTimeout(() => {
+        setHasManualSwipe(false);
+      }, 10000); // 10 secondes avant de reprendre l'autoplay
+
+      return () => clearTimeout(timer);
+    }
+  }, [hasManualSwipe]);
+
+  // Navigation entre les slides
+  const goToSlide = useCallback((index: number, isManual = false, isSwipe = false) => {
+    if (isTransitioning || !combinedSlides.length) return;
+    
+    setIsTransitioning(true);
+    setCurrentSlideIndex(index);
+    
+    // Notifier le parent du changement d'index
+    if (onSlideChange) {
+      onSlideChange(index);
+    }
+    
+    // Seulement les swipes désactivent l'autoplay, pas les clics sur dots
+    if (isSwipe) {
+      setHasManualSwipe(true);
+    }
+    
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 300);
+  }, [isTransitioning, combinedSlides.length, currentSlideIndex, onSlideChange]);
+
+  // Navigation précédente
+  const goToPreviousSlide = useCallback(() => {
+    if (!combinedSlides.length || isTransitioning) return;
+    const newIndex = currentSlideIndex > 0 ? currentSlideIndex - 1 : combinedSlides.length - 1;
+    goToSlide(newIndex, true, true); // isManual=true, isSwipe=true
+  }, [currentSlideIndex, combinedSlides.length, isTransitioning, goToSlide]);
+
+  // Navigation suivante
+  const goToNextSlide = useCallback(() => {
+    if (!combinedSlides.length || isTransitioning) return;
+    const newIndex = currentSlideIndex < combinedSlides.length - 1 ? currentSlideIndex + 1 : 0;
+    goToSlide(newIndex, true, true); // isManual=true, isSwipe=true
+  }, [currentSlideIndex, combinedSlides.length, isTransitioning, goToSlide]);
+
+  // Auto-play du slideshow
+  useEffect(() => {
+    if (!combinedSlides.length || combinedSlides.length <= 1 || hasManualSwipe) return;
+
+    const interval = setInterval(() => {
+      const nextIndex = (currentSlideIndex + 1) % combinedSlides.length;
+      goToSlide(nextIndex, false); // false = pas manuel, donc pas de hasManualSwipe
+    }, 8000); // 8 secondes
+
+    return () => clearInterval(interval);
+  }, [combinedSlides, hasManualSwipe, currentSlideIndex, goToSlide]);
+
+  // Gestion du swipe - approche simplifiée
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const touch = e.touches[0];
+    setSwipeStartX(touch.clientX);
+    setSwipeStartY(touch.clientY);
+    setIsSwipeActive(true);
+
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+
+    if (!isSwipeActive || !combinedSlides.length || combinedSlides.length <= 1) {
+      setIsSwipeActive(false);
+      return;
+    }
+
+    const touch = e.changedTouches[0];
+    const deltaX = touch.clientX - swipeStartX;
+    const deltaY = touch.clientY - swipeStartY;
+    
+
+    // Vérifier que c'est un swipe horizontal (plus horizontal que vertical)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // Swipe vers la droite - slide précédent
+
+        goToPreviousSlide();
+      } else {
+        // Swipe vers la gauche - slide suivant
+
+        goToNextSlide();
+      }
+    }
+
+    setIsSwipeActive(false);
+  }, [isSwipeActive, swipeStartX, swipeStartY, combinedSlides.length, goToPreviousSlide, goToNextSlide, currentSlideIndex]);
+
+  // Gestion du touch move avec addEventListener pour éviter les événements passifs
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (!isSwipeActive) return;
+    
+    const touch = e.touches[0];
+    const deltaX = touch.clientX - swipeStartX;
+    const deltaY = touch.clientY - swipeStartY;
+    
+    // Détecter si c'est un swipe horizontal
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+      e.preventDefault(); // Empêcher le scroll seulement si c'est un swipe
+    }
+  }, [isSwipeActive, swipeStartX, swipeStartY]);
+
+  // Ajouter les event listeners avec passive: false
+  useEffect(() => {
+    const container = document.getElementById('slideshow-container');
+    if (!container) return;
+
+    container.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    return () => {
+      container.removeEventListener('touchmove', handleTouchMove);
+    };
+  }, [handleTouchMove]);
+
+  // Gestion du swipe souris (pour les tests)
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
+    setSwipeStartX(e.clientX);
+    setSwipeStartY(e.clientY);
+    setIsSwipeActive(true);
+
+  }, []);
+
+  const handleMouseUp = useCallback((e: React.MouseEvent) => {
+    if (!isSwipeActive || !combinedSlides.length || combinedSlides.length <= 1) {
+      setIsSwipeActive(false);
+      return;
+    }
+
+    const deltaX = e.clientX - swipeStartX;
+    const deltaY = e.clientY - swipeStartY;
+    
+
+    // Vérifier que c'est un swipe horizontal (plus horizontal que vertical)
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
+      if (deltaX > 0) {
+        // Swipe vers la droite - slide précédent
+
+        const newIndex = currentSlideIndex > 0 ? currentSlideIndex - 1 : combinedSlides.length - 1;
+        goToSlide(newIndex, true, true); // isManual=true, isSwipe=true
+      } else {
+        // Swipe vers la gauche - slide suivant
+
+        const newIndex = currentSlideIndex < combinedSlides.length - 1 ? currentSlideIndex + 1 : 0;
+        goToSlide(newIndex, true, true); // isManual=true, isSwipe=true
+      }
+    }
+
+    setIsSwipeActive(false);
+  }, [isSwipeActive, swipeStartX, swipeStartY, combinedSlides.length, currentSlideIndex, goToSlide]);
+
+
+  if (loading) {
+    return (
+      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-primary)' }}>
+        <div className="text-white text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+          <p>{t('loading.slideshow')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !slideshowDetails || combinedSlides.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-primary)' }}>
+        <div className="text-white text-center p-6">
+          <div className="text-red-500 text-lg mb-2">{t('error.general')}</div>
+          <div className="text-gray-300 text-sm mb-4">{error || 'Impossible de charger le slideshow ou aucune image disponible'}</div>
+        </div>
+      </div>
+    );
+  }
+
+  const currentSlide = combinedSlides[currentSlideIndex];
+
+  return (
+    <div 
+      id="slideshow-container"
+      className="w-full h-full relative"
+      style={{ backgroundColor: 'var(--color-primary)', touchAction: 'pan-y' }}
+      onMouseDown={handleMouseDown}
+      onMouseUp={handleMouseUp}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Vidéo de fond si disponible - pas de vidéo dans le slideshow pour l'instant */}
+
+      {/* Image/Vidéo actuelle */}
+      <div 
+        className="relative w-full h-full overflow-hidden"
+        style={{ backgroundColor: 'var(--color-primary)', touchAction: 'pan-y' }}
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Overlay invisible pour capturer les gestes tactiles - ne couvre que la zone centrale, pas les contrôles */}
+        <div 
+          className="absolute z-10"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          style={{ 
+            touchAction: 'pan-y',
+            top: '0',
+            left: '0',
+            right: '0',
+            bottom: '100px' // Laisser plus d'espace pour les bullets
+          }}
+        />
+        
+        {currentSlide.type === 'video' ? (
+          <video
+            src={currentSlide.url}
+            className={`w-full h-full object-cover transition-all duration-700 ease-out ${
+              isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+            }`}
+            autoPlay
+            muted
+            loop
+            playsInline
+          />
+        ) : (
+          <img
+            src={currentSlide.url}
+            alt={currentSlide.caption || `Image ${currentSlideIndex + 1}`}
+            className={`w-full h-full object-cover transition-all duration-700 ease-out ${
+              isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+            }`}
+          />
+        )}
+        
+        {/* Dégradé rouge en bas du slider - z-[5] pour passer sous les titres */}
+        <div 
+          className="absolute left-0 right-0 bottom-0 h-[100px] z-[5] pointer-events-none"
+          style={{
+            background: `linear-gradient(180deg, transparent 0%, ${activityColor || '#690217'} 100%)`
+          }}
+        ></div>
+        
+        {/* Nom du POI - centré et au-dessus du dégradé */}
+        <div 
+          className={`absolute top-[200px] left-0 right-0 z-[25] transition-all duration-700 ease-out ${
+            isTransitioning ? 'opacity-0 transform translate-y-2' : 'opacity-100 transform translate-y-0'
+          }`}
+        >
+          <h3 className="font-['Inter-SemiBold',Helvetica] font-semibold text-white text-base tracking-[-0.17px] leading-[normal] drop-shadow-lg text-center">
+            {slideshowDetails?.poi_name?.toUpperCase() || 'POI'}
+          </h3>
+        </div>
+        
+        {/* Caption de la photo actuelle - en bas, au-dessus du dégradé */}
+        {currentSlide.caption && (
+          <div 
+            className={`absolute bottom-[60px] left-[29px] right-[29px] z-[25] transition-all duration-700 ease-out ${
+              isTransitioning ? 'opacity-0 transform translate-y-2' : 'opacity-100 transform translate-y-0'
+            }`}
+          >
+            <p className="font-['Inter-Regular',Helvetica] font-normal text-white text-sm tracking-[-0.17px] leading-[normal] drop-shadow-lg">
+              {currentSlide.caption}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Indicateurs de pagination */}
+      {combinedSlides.length > 1 && (
+        <div className="absolute flex items-center gap-1 h-1.5 bottom-6 left-[29px] opacity-[0.93] z-[999] pointer-events-auto">
+          {combinedSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                goToSlide(index, true, false); // isManual=true, isSwipe=false
+              }}
+              onTouchStart={(e) => {
+                e.stopPropagation();
+
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+
+                goToSlide(index, true, false); // isManual=true, isSwipe=false
+              }}
+              className={`h-1.5 rounded-[7px] bg-white transition-all duration-200 hover:opacity-100 cursor-pointer pointer-events-auto ${
+                index === currentSlideIndex 
+                  ? 'w-[25px] opacity-100' 
+                  : 'w-1.5 opacity-70'
+              }`}
+              style={{ pointerEvents: 'auto' }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};

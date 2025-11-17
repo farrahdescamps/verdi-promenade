@@ -1,0 +1,1 @@
+export { PageChoixIntro } from "./PageChoixIntro";

@@ -1,0 +1,162 @@
+/* Styles pour les composants - séparés pour alléger les fichiers */
+
+/* Bouton simple avec traits de séparation */
+.simple-connection-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 64px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 1rem 0;
+  padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 50;
+}
+
+.simple-connection-button .connection-text {
+  color: #FFF;
+  text-align: center;
+  font-family: Inter, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: normal;
+  letter-spacing: -0.165px;
+  margin: 0 20px;
+  white-space: nowrap;
+  pointer-events: none; /* Évite les conflits d'événements */
+}
+
+.simple-connection-button .connection-line {
+  flex: 1;
+  height: 1px;
+  background-color: #FFF;
+  opacity: 0.8;
+  pointer-events: none; /* Évite les conflits d'événements */
+}
+
+.simple-connection-button:hover .connection-text,
+.simple-connection-button:active .connection-text {
+  opacity: 0.8;
+}
+
+.simple-connection-button:hover .connection-line,
+.simple-connection-button:active .connection-line {
+  opacity: 1;
+}
+
+/* États tactiles pour mobile */
+.simple-connection-button:active {
+  transform: scale(0.98);
+  transition: transform 0.1s ease;
+}
+
+/* Amélioration de la zone tactile sur mobile */
+@media (max-width: 768px) {
+  .simple-connection-button {
+    min-height: 48px;
+    padding: 1.25rem 0;
+  }
+}
+/* Conteneur de sélection de langue avec glassmorphism */
+/* Suppression du padding par défaut des popups Leaflet */
+.leaflet-popup-content-wrapper {
+  padding: 0 !important;
+}
+
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+.leaflet-popup-tip-container {
+  margin: 0 !important;
+}
+
+/* Ajuster la position de la flèche du popup pour qu'elle pointe exactement sur le pin */
+
+/* Masquer l'attribution de la carte tout en la gardant dans le code */
+.leaflet-control-attribution {
+  display: none !important;
+}
+.leaflet-popup-tip {
+  margin-left: -6px !important;
+}
+
+.language-selector-container {
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 8px;
+  overflow: hidden;
+  height: 350px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Bouton de langue sélectionné */
+.language-item-selected {
+  background: var(--color-primary);
+  border-left: 3px solid var(--color-primary);
+}
+
+/* Animation de fade pour le contenu */
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+/* Animation de fade out pour l'écran "Your experience!" */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Animation rideau qui descend, reste en place, puis remonte vers le haut */
+@keyframes slideDownUp {
+  0% {
+    transform: translateY(-100%);
+  }
+  40% {
+    transform: translateY(0%);
+  }
+  60% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+/* Animation du logo : réduction et remontée vers le haut de manière fluide */
+@keyframes logoShrinkMoveUp {
+  from {
+    width: 160px;
+    height: 160px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  to {
+    width: 92px;
+    height: 117px;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}

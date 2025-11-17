@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/concierge-api/:path*",
+      "destination": "https://concierge-production-859a.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "https://back-genie7-production.up.railway.app/api/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

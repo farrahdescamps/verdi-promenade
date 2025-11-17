@@ -1,0 +1,261 @@
+{
+  "common": {
+    "connexion": "CONNEXION",
+    "exploreOffline": "Explore hors-ligne",
+    "chooseLanguage": "Choisissez une langue",
+    "search": "Chercher votre langue",
+    "getStarted": "C'EST PARTI !",
+    "loading": "Chargement...",
+    "email": "Email",
+    "password": "Mot de passe",
+    "forgotPassword": "Mot de passe oublié ?",
+    "createAccount": "Créer un compte",
+    "alreadyHaveAccount": "Déjà un compte ?",
+    "return": "Retour",
+    "noVideo": "Aucune vidéo disponible",
+    "noPOI": "Aucun point d'intérêt disponible pour cette activité",
+    "minPodcast": "min podcast"
+  },
+  "splash": {
+    "title": "Océane",
+    "subtitle": "Le Havre autrement",
+    "yourExperience": "Votre expérience!"
+  },
+  "home": {
+    "yourWay": "À votre façon!",
+    "enjoyYourStay": "Profitez de votre séjour",
+    "chooseRestaurant": "Choisissez votre restaurant",
+    "discoverCity": "Découvrez Grande Canarie",
+    "bookExperience": "Réservez une expérience",
+    "anyQuestion": "Une question ?",
+    "exploreAtOwnPace": "Vous préférez explorer notre hôtel à votre rythme ?",
+    "readCompleteGuide": "Vous pouvez lire notre guide complet.",
+    "downloadGuide": "Téléchargez notre guide",
+    "restaurant": "Trouvez votre restaurant!",
+    "experience": "Réservez une expérience!",
+    "discover": "Découvrez Grande Canarie!",
+    "all": "Tout"
+  },
+  "language": {
+    "title1": "Le Havre,",
+    "title2": "autrement !"
+  },
+  "login": {
+    "welcome": "Bienvenue",
+    "subtitle": "Se connecter",
+    "name": "Nom",
+    "email": "Email",
+    "namePlaceholder": "John Doe",
+    "emailPlaceholder": "exemple@email.com",
+    "loginButton": "Se connecter",
+    "orConnectWith": "Ou connexion avec",
+    "noAccount": "Vous n'avez pas de compte Océane ?",
+    "createAccountLink": "Créez votre compte."
+  },
+  "register": {
+    "title": "Créer un compte",
+    "subtitle": "Ne perdez rien de votre aventure en créant un compte !",
+    "firstName": "Prénom",
+    "lastName": "Nom de famille",
+    "phone": "Téléphone",
+    "age": "Âge",
+    "acceptTerms": "J'accepte les termes et conditions",
+    "createAccountButton": "Créer un compte"
+  },
+  "onboarding": {
+    "accountCreated": "Votre compte est créé.",
+    "subtitle": "Vous pouvez maintenant explorer Le Havre en toute tranquillité !",
+    "startAdventure": "Commence ton aventure"
+  },
+  "passwordReset": {
+    "title": "Mot de passe oublié",
+    "subtitle": "Entrez votre numéro de téléphone pour recevoir un code afin de réinitialiser votre mot de passe.",
+    "resetWithEmail": "Réinitialiser avec votre adresse mail.",
+    "sendCode": "Votre code"
+  },
+  "passwordCreate": {
+    "title": "Créer un nouveau mot de passe",
+    "subtitle": "Sécurisez votre compte Océane en créant un mot de passe fort.",
+    "passwordRequirement": "Votre mot de passe doit contenir un caractère spécial.",
+    "createPasswordButton": "Créer un nouveau mot de passe"
+  },
+  "choice": {
+    "title": "CHOISISSEZ !",
+    "buildAdventure": "Construisez votre aventure !",
+    "buildAdventureSubtitle": "Avant de découvrir votre parcours, dîtes-moi ce que vous aimez en swipant ou en cliquant !"
+  },
+  "tinder": {
+    "buildYourStay": "Construisez votre séjour !",
+    "swipeInstructions": "Dites-moi ce que vous aimez en glissant ou en cliquant !",
+    "askDirectQuestion": "Poser directement une question",
+    "categories": {
+      "restaurant": "Restaurant",
+      "activity": "Activité",
+      "itinerary": "Itinéraire"
+    }
+  },
+  "journey": {
+    "title": "MON AVENTURE"
+  },
+  "navigation": {
+    "parler": "Parler",
+    "planifier": "Planifier", 
+    "explorer": "Explorer",
+    "profil": "Profil"
+  },
+  "talkWithOceane": {
+    "title": "Parlez avec Océane !",
+    "titleHeader": "Discutons",
+    "listTitle": "Discutons",
+    "conversationTitle": "Faisons connaissance",
+    "greeting": "Hello,",
+    "questionPrompt": "Pose moi une question !",
+    "inputPlaceholder": "Posez une question à Océane",
+    "sendButtonAria": "Envoyer message",
+    "subtitle": "Pour des conseils encore plus personnalisés, répondez à 3 questions rapides.",
+    "viewSuggestionsButton": "Voir les suggestions",
+    "personalizeMoreButton": "Personnaliser encore plus !",
+    "viewSuggestionsAriaLabel": "Voir les suggestions d'activités",
+    "personalizeMoreAriaLabel": "Personnaliser davantage avec Océane",
+    "itineraryReady": "Votre itinéraire personnalisé est prêt.",
+    "goodVisit": "Bonne visite du Havre !",
+    "viewItinerary": "Voir mon itinéraire",
+    "askNewQuestionButton": "Posez-moi votre question",
+    "haveQuestion": "J'ai une question",
+    "developmentModal": {
+      "title": "Fonctionnalité en cours de développement",
+      "subtitle": "Cette fonctionnalité sera bientôt disponible !",
+      "okButton": "D'accord"
+    }
+  },
+  "poi": {
+    "slideshow": "Expérience",
+    "podcast": "Podcast",
+    "map": "Map",
+    "reviews": "Avis"
+  },
+  "podcast": {
+    "personalized": "Podcast personnalisé",
+    "description": "En répondant à 3 questions rapides, Océane vous construit un podcast sur-mesure.",
+    "generic": "Podcast générique",
+    "personalizedButton": "Personnalisé",
+    "available": "Podcast disponible",
+    "listen": "Écouter le podcast",
+    "generating": "Un peu de patience, nous générons votre podcast",
+    "generatingSubtitle": "Cela peut prendre 30 secondes",
+    "ready": "Votre podcast est prêt, bonne écoute !",
+    "generationError": "Erreur lors de la génération du podcast",
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop"
+  },
+  "miniguide": {
+    "generating": "Génération du guide en cours...",
+    "generatingSubtitle": "Cela peut prendre quelques instants. Veuillez patienter.",
+    "informations": "Informations",
+    "close": "Fermer"
+  },
+  "loading": {
+    "translations": "Chargement des traductions...",
+    "activities": "Chargement des activités...",
+    "conversation": "Chargement de la conversation...",
+    "activity": "Chargement de l'activité...",
+    "personalizedActivities": "Chargement de vos activités personnalisées...",
+    "slideshow": "Chargement du slideshow...",
+    "video": "Chargement de la vidéo...",
+    "languages": "Chargement des langues...",
+    "conversations": "Chargement des conversations...",
+    "themes": "Chargement des thèmes...",
+    "videoOutro": "Chargement vidéo outro..."
+  },
+  "error": {
+    "general": "Erreur",
+    "loading": "Erreur de chargement",
+    "video": "Erreur vidéo",
+    "videoLoading": "Erreur de chargement vidéo",
+    "themeLoading": "Erreur de chargement",
+    "messageSend": "Erreur lors de l'envoi du message",
+    "choiceSend": "Erreur lors de l'envoi du choix",
+    "conversationLoad": "Erreur lors du chargement de la conversation",
+    "autoResponse": "Erreur lors de la réponse automatique",
+    "activityLoad": "Erreur lors du chargement de l'activité",
+    "activitiesLoad": "Erreur lors du chargement des activités",
+    "slideshowLoad": "Erreur lors du chargement du slideshow",
+    "conversationCreate": "Erreur lors de la création de la conversation",
+    "podcastPlay": "Erreur lors de la lecture du podcast",
+    "languagesLoad": "Erreur lors du chargement des langues",
+    "conversationsLoad": "Erreur lors du chargement des conversations",
+    "conversationCreateError": "Erreur lors de la création de la conversation",
+    "themeLoad": "Erreur lors du chargement des thèmes",
+    "onboardingConversationCreate": "Erreur lors de la création de la conversation d'onboarding"
+  },
+  "actions": {
+    "retry": "Réessayer",
+    "creating": "Création...",
+    "askQuestion": "Posez-moi votre question",
+    "reserve": "Réserver"
+  },
+  "reservation": {
+    "title": "Réservation",
+    "customerNumberPlaceholder": "Numéro client",
+    "paymentSection": "Paiement",
+    "cardNumberPlaceholder": "Numéro de carte",
+    "expiryPlaceholder": "MM/AA",
+    "cvvPlaceholder": "CVV",
+    "participant": "participant",
+    "participants": "participants",
+    "payNow": "Payer maintenant",
+    "processing": "Traitement..."
+  },
+  "activity": {
+    "askQuestionAbout": "Posez-moi toutes vos questions sur {activityTitle}",
+    "chatTitle": "Questions sur l'activité",
+    "welcomeMessage": "Posez-moi toutes vos questions sur {activityTitle}",
+    "inputPlaceholder": "Tapez votre question ici...",
+    "sendButton": "Envoyer",
+    "backToActivity": "Retour à l'activité",
+    "continueConversation": "Continuer la conversation",
+    "questionSent": "Question envoyée",
+    "processingQuestion": "Traitement de votre question...",
+    "loadingIndicator": "Réponses enrichies par les data Region Lovers",
+    "loadingHistory": "Chargement de l'historique...",
+    "errorNoPOI": "Aucune instance de POI disponible",
+    "errorNoValidPOI": "Aucune instance de POI valide trouvée dans les données",
+    "errorSendingQuestion": "Erreur lors de l'envoi de la question",
+    "errorProcessingQuestion": "Désolé, je n'ai pas pu traiter votre question pour le moment. Veuillez réessayer.",
+    "defaultActivityTitle": "Activité"
+  },
+  "welcome": {
+    "podcast_intro": "Bienvenue ! Créons ensemble un podcast personnalisé pour découvrir ce lieu d'exception."
+  },
+  "q": {
+    "knowledge_level": "Quel est votre niveau de connaissance sur ce sujet ?"
+  },
+  "knowledgeLevel": {
+    "beginner": "Débutant",
+    "interested": "Intéressé.e",
+    "expert": "Expert"
+  },
+  "chat": {
+    "title": "Je suis à votre disposition.",
+    "subtitle": "Posez moi votre question !",
+    "placeholder": "Votre message...",
+    "send": "Envoyer",
+    "sendToWhatsApp": "Envoyer sur WhatsApp",
+    "noSession": "Session non trouvée. Veuillez vous reconnecter.",
+    "emptyConversation": "Commencez la conversation en posant une question...",
+    "whatsappModal": {
+      "title": "Envoyer sur WhatsApp",
+      "phoneLabel": "Numéro de téléphone",
+      "phonePlaceholder": "33612345678 ou +33612345678",
+      "phoneHelp": "Format international (avec ou sans +)",
+      "invalidPhone": "Numéro de téléphone invalide",
+      "noMessages": "Aucune conversation à envoyer",
+      "cancel": "Annuler",
+      "send": "Envoyer",
+      "sending": "Envoi...",
+      "success": "Conversation envoyée !",
+      "error": "Erreur lors de l'envoi"
+    }
+  }
+}

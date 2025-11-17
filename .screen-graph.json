@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    {
+      "id": "src/components/RouteLogger.tsx",
+      "label": "RouteLogger",
+      "routes": [
+        "/"
+      ],
+      "isRoot": true
+    }
+  ],
+  "edges": []
+}
