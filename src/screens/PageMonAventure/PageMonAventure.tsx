@@ -216,13 +216,16 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
   // Adapter les couleurs selon le thème de la carte
   const mapTextColor = MAP_THEME === 'light' ? (primaryColor || '#690217') : 'white';
   
-  // Logo : inversé blanc en dark, couleur primaire en light via CSS filter
-  const mapLogoStyle = MAP_THEME === 'light' 
+  // Logo : inversé blanc en dark, couleur primaire en light via wrapper
+  const mapLogoContainerStyle = MAP_THEME === 'light' 
     ? { 
-        // En light: on colore le SVG avec la couleur primaire
-        filter: `brightness(0) saturate(100%)`,
+        // En light: wrapper avec couleur primaire qui force le fill du SVG
         color: primaryColor || '#690217'
       }
+    : {};
+  
+  const mapLogoImageStyle = MAP_THEME === 'light'
+    ? {}
     : { 
         // En dark: on inverse en blanc
         filter: 'brightness(0) invert(1)' 
@@ -443,14 +446,19 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
           </div>
 
           {/* Logo de l'hôtel - centré en haut */}
-          <div className="absolute top-[30px] left-0 right-0 mx-auto w-[25%] max-w-[100px] z-[2]">
+          <div 
+            className="absolute top-[30px] left-0 right-0 mx-auto w-[25%] max-w-[100px] z-[2]"
+            style={mapLogoContainerStyle}
+          >
             {logoUrl && (
-              <LogoDisplay 
-                logoData={logoUrl} 
-                className="w-full h-full object-contain [&_path]:fill-current [&_circle]:fill-current [&_rect]:fill-current [&_polygon]:fill-current" 
-                style={mapLogoStyle}
-                alt={hotelName} 
-              />
+              <div className="w-full h-full [&_svg]:w-full [&_svg]:h-full [&_path]:fill-current [&_circle]:fill-current [&_rect]:fill-current [&_polygon]:fill-current">
+                <LogoDisplay 
+                  logoData={logoUrl} 
+                  className="w-full h-full object-contain" 
+                  style={mapLogoImageStyle}
+                  alt={hotelName} 
+                />
+              </div>
             )}
           </div>
 
@@ -542,16 +550,19 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
           style={{
             animation: 'fadeIn 0.6s ease-out forwards',
             opacity: 0,
-            animationDelay: '0.2s'
+            animationDelay: '0.2s',
+            ...mapLogoContainerStyle
           }}
         >
           {logoUrl && (
-            <LogoDisplay 
-              logoData={logoUrl} 
-              className="w-full h-full object-contain [&_path]:fill-current [&_circle]:fill-current [&_rect]:fill-current [&_polygon]:fill-current" 
-              style={mapLogoStyle}
-              alt={hotelName} 
-            />
+            <div className="w-full h-full [&_svg]:w-full [&_svg]:h-full [&_path]:fill-current [&_circle]:fill-current [&_rect]:fill-current [&_polygon]:fill-current">
+              <LogoDisplay 
+                logoData={logoUrl} 
+                className="w-full h-full object-contain" 
+                style={mapLogoImageStyle}
+                alt={hotelName} 
+              />
+            </div>
           )}
         </div>
 
