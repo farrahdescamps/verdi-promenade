@@ -614,7 +614,7 @@ const PageActivite: React.FC = () => {
 
   // Vue normale de l'activité avec slideshow global
   return (
-    <div className="w-full h-screen overflow-y-auto bg-gray-50">
+    <div className="w-full min-h-screen overflow-y-auto bg-gray-50">
       {/* Header fixe avec slideshow global */}
         <div className={`fixed left-0 right-0 rounded-b-[20px] overflow-hidden`}
         style={{ 
@@ -914,8 +914,7 @@ const PageActivite: React.FC = () => {
             paddingRight: '20px', 
             paddingBottom: '20px',
             backgroundColor: '#f9fafb', // Fond opaque
-            zIndex: 1, // EN DESSOUS du header (z-100)
-            minHeight: '100vh' // Au moins la hauteur de l'écran
+            zIndex: 1 // EN DESSOUS du header (z-100)
           }}>
           {/* Contenu du podcast POI */}
           {isPodcastPoiActive && podcastPoiDetails ? (
