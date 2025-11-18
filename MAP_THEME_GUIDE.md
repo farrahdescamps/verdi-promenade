@@ -12,8 +12,10 @@ Votre application dispose maintenant de **deux thèmes de carte** configurables 
 ```
 URL: https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png
 ```
-- Fond blanc/beige
-- Texte sombre
+- **Carte** : Fond blanc/beige
+- **Texte** : Couleur primaire de l'hôtel (primaryColor)
+- **Logo** : Couleur originale (pas de filtre)
+- **Dégradé** : Blanc transparent → Blanc opaque
 - Parfait pour : applications professionnelles, lecture en journée
 - Style : Clean, minimal, épuré
 
@@ -21,8 +23,10 @@ URL: https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png
 ```
 URL: https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png
 ```
-- Fond noir/gris foncé
-- Texte clair
+- **Carte** : Fond noir/gris foncé
+- **Texte** : Blanc
+- **Logo** : Blanc (filtre invert)
+- **Dégradé** : Transparent → Couleur primaire
 - Parfait pour : applications modernes, économie batterie OLED, lecture nocturne
 - Style : Premium, luxueux, moderne
 
@@ -214,6 +218,10 @@ Moderne et tendance.
 3. **`src/screens/PageMonAventure/PageMonAventure.tsx`**
    - Import de `MAP_THEME`
    - Application à 2 instances de carte
+   - **Adaptation automatique des couleurs** :
+     * `mapTextColor` : primaryColor (light) / blanc (dark)
+     * `mapLogoFilter` : aucun (light) / invert (dark)
+     * `mapGradient` : blanc (light) / primaryColor (dark)
 
 4. **`src/screens/PageChoixIntro/PageChoixIntro.tsx`**
    - Import de `MAP_THEME`

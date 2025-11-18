@@ -213,6 +213,15 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
   }, [tinderResults]);
 
   // Si on a des résultats Tinder, les afficher; sinon afficher les activités de la session
+  // Adapter les couleurs selon le thème de la carte
+  const mapTextColor = MAP_THEME === 'light' ? (primaryColor || '#690217') : 'white';
+  const mapLogoFilter = MAP_THEME === 'light' ? 'none' : 'brightness(0) invert(1)';
+  
+  // Dégradé adapté au thème
+  const mapGradient = MAP_THEME === 'light'
+    ? `linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(255, 255, 255, 0.95) 100%)`
+    : `linear-gradient(180deg, rgba(105, 2, 23, 0) 0%, rgba(105, 2, 23, 0.5) 50%, ${primaryColor || '#690217'} 100%)`;
+
   const activities = tinderResults 
     ? (() => {
         console.log('%c🎯 CONVERSION DES THÈMES TINDER', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', {
@@ -413,13 +422,13 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
             />
           </div>
 
-          {/* Logo de l'hôtel - centré en haut, en blanc */}
+          {/* Logo de l'hôtel - centré en haut */}
           <div className="absolute top-[30px] left-0 right-0 mx-auto w-[25%] max-w-[100px] z-[2]">
             {logoUrl && (
               <LogoDisplay 
                 logoData={logoUrl} 
                 className="w-full h-full object-contain" 
-                style={{ filter: 'brightness(0) invert(1)' }}
+                style={{ filter: mapLogoFilter }}
                 alt={hotelName} 
               />
             )}
@@ -430,17 +439,18 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
             className="absolute w-full h-[138px] z-[3] rounded-[0px_0px_20px_20px]"
             style={{
               top: 'calc(80% - 138px)',
-              background: `linear-gradient(180deg, rgba(105, 2, 23, 0) 0%, rgba(105, 2, 23, 0.5) 50%, ${primaryColor || '#690217'} 100%)`
+              background: mapGradient
             }}
           />
 
           {/* Titre centré - juste sous le logo */}
           <h1 
-            className="absolute left-0 right-0 mx-auto w-[90%] max-w-[320px] z-[4] text-white text-[25px] text-center tracking-[-0.17px] leading-7"
+            className="absolute left-0 right-0 mx-auto w-[90%] max-w-[320px] z-[4] text-[25px] text-center tracking-[-0.17px] leading-7"
             style={{ 
               top: '95px', // Logo à 30px + hauteur logo 46px + espace 19px = 95px
               fontFamily: 'Abril Fatface', 
-              fontWeight: 400 
+              fontWeight: 400,
+              color: mapTextColor
             }}
           >
             {getHeaderTitle()}
@@ -506,7 +516,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
           />
         </div>
 
-        {/* Logo de l'hôtel - centré en haut, en blanc avec animation */}
+        {/* Logo de l'hôtel - centré en haut avec animation */}
         <div 
           className="absolute top-[30px] left-0 right-0 mx-auto w-[25%] max-w-[100px] z-[2] pointer-events-none"
           style={{
@@ -519,7 +529,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
             <LogoDisplay 
               logoData={logoUrl} 
               className="w-full h-full object-contain" 
-              style={{ filter: 'brightness(0) invert(1)' }}
+              style={{ filter: mapLogoFilter }}
               alt={hotelName} 
             />
           )}
@@ -530,21 +540,22 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
           className="absolute w-full h-[138px] z-[3] rounded-[0px_0px_20px_20px] pointer-events-none"
           style={{
             top: 'calc(80% - 138px)',
-            background: `linear-gradient(180deg, rgba(105, 2, 23, 0) 0%, rgba(105, 2, 23, 0.5) 50%, ${primaryColor || '#690217'} 100%)`
+            background: mapGradient
           }}
         />
 
         {/* Titre centré avec animation - juste sous le logo, caché si une activité est sélectionnée */}
         {!activeCardId && (
           <h1 
-            className="absolute left-0 right-0 mx-auto w-[90%] max-w-[320px] z-[4] text-white text-[25px] text-center tracking-[-0.17px] leading-7 pointer-events-none"
+            className="absolute left-0 right-0 mx-auto w-[90%] max-w-[320px] z-[4] text-[25px] text-center tracking-[-0.17px] leading-7 pointer-events-none"
             style={{ 
               top: '95px', // Logo à 30px + hauteur logo 46px + espace 19px = 95px
               fontFamily: "'Abril Fatface', serif",
               fontWeight: 400,
               animation: 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
               opacity: 0,
-              animationDelay: '0.3s'
+              animationDelay: '0.3s',
+              color: mapTextColor
             }}
           >
             {getHeaderTitle()}
