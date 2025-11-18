@@ -697,11 +697,11 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
           })()}
           </div>
 
-          {/* Bouton "Voir plus" - avec espace respirant au-dessus */}
+          {/* Bouton "Voir plus/moins" - espace respirant uniquement quand ouvert */}
           {activities.length > 2 && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="w-full py-2 text-center text-[13px] font-medium tracking-[-0.17px] border-t mt-3"
+              className={`w-full py-2 text-center text-[13px] font-medium tracking-[-0.17px] border-t ${isExpanded ? 'mt-3' : ''}`}
               style={{ 
                 color: primaryColor || '#690217',
                 borderColor: `${primaryColor || '#690217'}20`,
