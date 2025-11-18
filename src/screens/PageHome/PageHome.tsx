@@ -21,25 +21,25 @@ const TYPE_TO_MENU_CONFIG: Record<string, Omit<MenuItem, 'id' | 'type' | 'catego
     icon: "/img/hotel-icon.svg",
     textKey: "home.enjoyYourStay",
     iconAlt: "Hotel",
-    path: "/enjoy-stay", // Navigation directe vers les services de l'hôtel
+    path: "/enjoy-stay", // Navigation directe vers les services de l'hôtel (pas de Tinder pour hotel)
   },
   'restaurant': {
     icon: "/img/restaurant-icon.svg",
     textKey: "home.chooseRestaurant",
     iconAlt: "Restaurant",
-    path: "/journey", // Navigation directe vers la liste des restaurants
+    path: "/page-choix-intro", // Passe par Tinder - skip auto si aucune carte
   },
   'itinerary': {
     icon: "/img/ville-icon.svg",
     textKey: "home.discoverCity",
     iconAlt: "Ville",
-    path: "/page-choix-intro",
+    path: "/page-choix-intro", // Passe par Tinder - skip auto si aucune carte
   },
   'activity': {
     icon: "/img/reserver-icon.svg",
     textKey: "home.bookExperience",
     iconAlt: "Reserver",
-    path: "/page-choix-intro",
+    path: "/page-choix-intro", // Passe par Tinder - skip auto si aucune carte
   },
 };
 
