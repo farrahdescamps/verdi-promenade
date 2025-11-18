@@ -234,7 +234,8 @@ export const PageHome = (): JSX.Element => {
       isInitialLoad
     });
 
-    if (logoUrl && mainPhotoUrl && hotelName && themes.length > 0 && !isLoadingTheme && !isLoadingThemes && imagesLoaded && safeAreasReady) {
+    // mainPhotoUrl est optionnel (peut être null)
+    if (logoUrl && hotelName && themes.length > 0 && !isLoadingTheme && !isLoadingThemes && imagesLoaded && safeAreasReady) {
       console.log('%c✅✅✅ TOUT PRÊT - AFFICHAGE !', 'background: #10b981; color: white; font-weight: bold; padding: 8px;');
       setIsInitialLoad(false);
     } else {
