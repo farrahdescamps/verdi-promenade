@@ -327,18 +327,17 @@ export const PageHome = (): JSX.Element => {
           />
         )}
 
-        {/* Gradient overlay - utilise primaryColor converti en RGB */}
+        {/* Gradient overlay sur toute l'image pour meilleure lisibilité */}
         <div 
-          className="absolute left-0 w-full rounded-[0px_0px_20px_20px]"
+          className="absolute top-0 left-0 w-full rounded-[0px_0px_20px_20px]"
           style={{
-            top: 'calc(35vh - 120px)',
-            height: '120px',
+            height: '35vh',
             background: (() => {
               const color = primaryColor || '#690217';
               const r = parseInt(color.slice(1, 3), 16);
               const g = parseInt(color.slice(3, 5), 16);
               const b = parseInt(color.slice(5, 7), 16);
-              return `linear-gradient(180deg, rgba(${r}, ${g}, ${b}, 0) 0%, rgba(${r}, ${g}, ${b}, 1) 100%)`;
+              return `linear-gradient(180deg, rgba(${r}, ${g}, ${b}, 0.3) 0%, rgba(${r}, ${g}, ${b}, 0.5) 50%, rgba(${r}, ${g}, ${b}, 1) 100%)`;
             })()
           }}
         />
@@ -456,17 +455,17 @@ export const PageHome = (): JSX.Element => {
           />
         )}
 
-        {/* "À votre façon!" title text - dynamic with hotel name */}
+        {/* "À votre façon!" title text - taille réduite pour meilleure lisibilité */}
         {hotelName && (
           <h1 
             className="absolute left-0 right-0 text-center"
             style={{
               color: '#f4f9fd',
               fontFamily: 'Abril Fatface',
-              fontSize: '45px',
+              fontSize: '35px',
               fontStyle: 'normal',
               fontWeight: 400,
-              lineHeight: '45px',
+              lineHeight: '38px',
               top: 'calc(35vh / 2)'
             }}
           >
