@@ -35,7 +35,7 @@ export const PodcastView: React.FC<PodcastViewProps> = ({
   const { sessionData } = useSession();
   const { currentLanguage } = useLanguage();
   const { t } = useTranslation();
-  const { logoUrl, hotelName } = useTheme();
+  const { logoUrl, hotelName, primaryColor } = useTheme();
   const navigate = useNavigate();
   const audioRef = useRef<HTMLAudioElement>(null);
   
@@ -719,8 +719,11 @@ export const PodcastView: React.FC<PodcastViewProps> = ({
               >
                 
                 
-                <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#690217] border-t-transparent mx-auto mb-4"></div>
-                <div className="text-base font-semibold mb-2" style={{ color: '#690217', fontFamily: 'Inter' }}>{t('podcast.generating')}</div>
+                <div 
+                  className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent mx-auto mb-4"
+                  style={{ borderColor: primaryColor || '#690217', borderTopColor: 'transparent' }}
+                ></div>
+                <div className="text-base font-semibold mb-2" style={{ color: primaryColor || '#690217', fontFamily: 'Inter' }}>{t('podcast.generating')}</div>
                 <div className="text-sm text-[#00000099]" style={{ fontFamily: 'Inter' }}>{t('podcast.generatingSubtitle')}</div>
               </div>
             </div>

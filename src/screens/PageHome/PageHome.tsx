@@ -327,13 +327,19 @@ export const PageHome = (): JSX.Element => {
           />
         )}
 
-        {/* Gradient overlay */}
+        {/* Gradient overlay - utilise primaryColor converti en RGB */}
         <div 
           className="absolute left-0 w-full rounded-[0px_0px_20px_20px]"
           style={{
             top: 'calc(35vh - 120px)',
             height: '120px',
-            background: `linear-gradient(180deg, rgba(105, 2, 23, 0) 0%, ${primaryColor || 'rgba(105, 2, 23, 1)'} 100%)`
+            background: (() => {
+              const color = primaryColor || '#690217';
+              const r = parseInt(color.slice(1, 3), 16);
+              const g = parseInt(color.slice(3, 5), 16);
+              const b = parseInt(color.slice(5, 7), 16);
+              return `linear-gradient(180deg, rgba(${r}, ${g}, ${b}, 0) 0%, rgba(${r}, ${g}, ${b}, 1) 100%)`;
+            })()
           }}
         />
 

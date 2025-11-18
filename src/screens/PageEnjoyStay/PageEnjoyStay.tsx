@@ -227,10 +227,17 @@ export const PageEnjoyStay: React.FC = () => {
         )}
         
         {/* Gradient overlay */}
+        {/* Gradient overlay - utilise primaryColor converti en RGB */}
         <div 
           className="absolute bottom-0 left-0 w-full h-[100px] rounded-b-[20px]"
           style={{
-            background: `linear-gradient(180deg, rgba(105, 2, 23, 0) 0%, ${primaryColor || '#690217'} 100%)`
+            background: (() => {
+              const color = primaryColor || '#690217';
+              const r = parseInt(color.slice(1, 3), 16);
+              const g = parseInt(color.slice(3, 5), 16);
+              const b = parseInt(color.slice(5, 7), 16);
+              return `linear-gradient(180deg, rgba(${r}, ${g}, ${b}, 0) 0%, rgba(${r}, ${g}, ${b}, 1) 100%)`;
+            })()
           }}
         />
 
@@ -404,7 +411,7 @@ export const PageEnjoyStay: React.FC = () => {
                             ) : (
                               <div 
                                 className="w-full h-20 flex items-center justify-center rounded-xl mb-1.5"
-                                style={{ backgroundColor: `${primaryColor}15` || '#69021715' }}
+                                style={{ backgroundColor: `${primaryColor || '#690217'}15` }}
                               >
                                 <span 
                                   className="text-xl opacity-30"
@@ -481,7 +488,7 @@ export const PageEnjoyStay: React.FC = () => {
                       ) : (
                         <div 
                           className="w-full h-20 flex items-center justify-center rounded-xl mb-1.5"
-                          style={{ backgroundColor: `${primaryColor}15` || '#69021715' }}
+                          style={{ backgroundColor: `${primaryColor || '#690217'}15` }}
                         >
                           <span 
                             className="text-xl opacity-30"

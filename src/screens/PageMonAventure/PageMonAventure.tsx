@@ -231,9 +231,9 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
         filter: 'brightness(0) invert(1)' 
       };
   
-  // Dégradé adapté au thème - dégradé de la couleur primaire en light
+  // Dégradé adapté au thème - TOUJOURS utiliser primaryColor (jamais en dur)
   const getPrimaryRGB = () => {
-    const color = primaryColor || '#456E6B';
+    const color = primaryColor || '#456E6B'; // Fallback seulement si primaryColor null
     const r = parseInt(color.slice(1, 3), 16);
     const g = parseInt(color.slice(3, 5), 16);
     const b = parseInt(color.slice(5, 7), 16);
@@ -243,7 +243,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
   const rgb = getPrimaryRGB();
   const mapGradient = MAP_THEME === 'light'
     ? `linear-gradient(180deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3) 40%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.85) 100%)`
-    : `linear-gradient(180deg, rgba(105, 2, 23, 0) 0%, rgba(105, 2, 23, 0.5) 50%, ${primaryColor || '#690217'} 100%)`;
+    : `linear-gradient(180deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5) 50%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1) 100%)`;
 
   const activities = tinderResults 
     ? (() => {
@@ -634,10 +634,11 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
           <button
             key={activity.id || index}
             onClick={() => handleCardClick(activity.id)}
-            className="relative w-full h-[51px] bg-[#f4f9fd] rounded-xl shadow-[0px_0px_7px_#69021726] cursor-pointer flex items-center overflow-hidden flex-shrink-0"
+            className="relative w-full h-[51px] bg-[#f4f9fd] rounded-xl cursor-pointer flex items-center overflow-hidden flex-shrink-0"
             style={{
               border: '0.5px solid',
               borderColor: primaryColor || '#690217',
+              boxShadow: `0px 0px 7px ${primaryColor || '#690217'}26`,
               transition: 'opacity 0.3s ease-out',
               opacity: !isExpanded && index >= 2 ? 0 : 1,
               pointerEvents: !isExpanded && index >= 2 ? 'none' : 'auto'

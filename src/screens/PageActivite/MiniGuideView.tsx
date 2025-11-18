@@ -221,13 +221,16 @@ export const MiniGuideView: React.FC<MiniGuideViewProps> = ({
           <div className="relative w-full max-w-[316px] mx-[30px] mt-[30px] pointer-events-auto">
             <div className="bg-[#f4f9fdcc] backdrop-blur-[1.5px] rounded-[7px] px-[21.8px] py-[29px] shadow-xl text-center"
               style={{ 
-                backdropFilter: 'blur(1.5px) brightness(100%)',
-                WebkitBackdropFilter: 'blur(1.5px) brightness(100%)'
-              }}
-            >
-              <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#690217] border-t-transparent mx-auto mb-4"></div>
-              <div className="text-base font-semibold mb-2" style={{ color: '#690217', fontFamily: 'Inter' }}>{t('miniguide.generating')}</div>
-              <div className="text-sm text-[#00000099]" style={{ fontFamily: 'Inter' }}>{t('miniguide.generatingSubtitle')}</div>
+              backdropFilter: 'blur(1.5px) brightness(100%)',
+              WebkitBackdropFilter: 'blur(1.5px) brightness(100%)'
+            }}
+          >
+            <div 
+              className="animate-spin rounded-full h-10 w-10 border-4 border-t-transparent mx-auto mb-4"
+              style={{ borderColor: primaryColor || '#690217', borderTopColor: 'transparent' }}
+            ></div>
+            <div className="text-base font-semibold mb-2" style={{ color: primaryColor || '#690217', fontFamily: 'Inter' }}>{t('miniguide.generating')}</div>
+            <div className="text-sm text-[#00000099]" style={{ fontFamily: 'Inter' }}>{t('miniguide.generatingSubtitle')}</div>
             </div>
           </div>
         </div>
