@@ -103,6 +103,14 @@ export const PageChoixIntro = (): JSX.Element => {
             themes: convertedThemes
           });
 
+          // Si aucune carte Tinder disponible, skip cet écran
+          if (convertedThemes.length === 0) {
+            console.log('%c⚠️ AUCUNE CARTE TINDER - Skip vers /journey', 'background: #f59e0b; color: white; font-weight: bold; padding: 4px 8px;');
+            setLoadingThemes(false);
+            navigate('/journey', { state: { category, skipTinder: true } });
+            return;
+          }
+
           setThemes(convertedThemes);
         } else {
           // Sinon, charger les thèmes par défaut (flux original)
@@ -113,6 +121,15 @@ export const PageChoixIntro = (): JSX.Element => {
       } catch (error) {
         console.error('❌ Erreur chargement Tinder:', error);
         setThemeError(`${t('error.themeLoad')}: ${error?.message || 'Erreur inconnue'}`);
+        
+        // En cas d'erreur lors du chargement Tinder, skip l'écran aussi
+        if (category) {
+          console.log('%c⚠️ ERREUR TINDER - Skip vers /journey', 'background: #ef4444; color: white; font-weight: bold; padding: 4px 8px;');
+          setLoadingThemes(false);
+          navigate('/journey', { state: { category, skipTinder: true } });
+          return;
+        }
+        
         // En cas d'erreur, utiliser les thèmes par défaut (si disponibles)
         if (!category) {
           // setThemes(fallbackThemes); // Commenté pour l'instant
