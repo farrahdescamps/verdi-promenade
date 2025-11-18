@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
+import { MAP_THEME } from '../config';
 
 interface BackButtonProps {
   onClick?: () => void;
@@ -8,6 +10,10 @@ interface BackButtonProps {
 
 export const BackButton: React.FC<BackButtonProps> = ({ onClick, className = '' }) => {
   const navigate = useNavigate();
+  const { primaryColor } = useTheme();
+  
+  // Adapter la couleur selon le thème de la carte
+  const buttonColor = MAP_THEME === 'light' ? (primaryColor || '#690217') : 'white';
 
   const handleClick = () => {
     if (onClick) {
@@ -31,7 +37,7 @@ export const BackButton: React.FC<BackButtonProps> = ({ onClick, className = '' 
       >
         <path
           d="M8 2L2 8L8 14"
-          stroke="white"
+          stroke={buttonColor}
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"

@@ -215,11 +215,16 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
   // Si on a des résultats Tinder, les afficher; sinon afficher les activités de la session
   // Adapter les couleurs selon le thème de la carte
   const mapTextColor = MAP_THEME === 'light' ? (primaryColor || '#690217') : 'white';
-  const mapLogoFilter = MAP_THEME === 'light' ? 'none' : 'brightness(0) invert(1)';
   
-  // Dégradé adapté au thème
+  // Logo : en mode light on force la couleur primaire, en mode dark on inverse en blanc
+  const mapLogoFilter = MAP_THEME === 'light' 
+    ? `brightness(0) saturate(100%)` 
+    : 'brightness(0) invert(1)';
+  const mapLogoColor = MAP_THEME === 'light' ? (primaryColor || '#690217') : undefined;
+  
+  // Dégradé adapté au thème - plus visible en mode light
   const mapGradient = MAP_THEME === 'light'
-    ? `linear-gradient(180deg, rgba(244, 249, 253, 0) 0%, rgba(244, 249, 253, 0.85) 50%, rgba(244, 249, 253, 1) 100%)`
+    ? `linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.8) 40%, rgba(255, 255, 255, 0.98) 100%)`
     : `linear-gradient(180deg, rgba(105, 2, 23, 0) 0%, rgba(105, 2, 23, 0.5) 50%, ${primaryColor || '#690217'} 100%)`;
 
   const activities = tinderResults 
@@ -428,7 +433,10 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
               <LogoDisplay 
                 logoData={logoUrl} 
                 className="w-full h-full object-contain" 
-                style={{ filter: mapLogoFilter }}
+                style={{ 
+                  filter: mapLogoFilter,
+                  color: mapLogoColor
+                }}
                 alt={hotelName} 
               />
             )}
@@ -439,7 +447,8 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
             className="absolute w-full h-[138px] z-[3] rounded-[0px_0px_20px_20px]"
             style={{
               top: 'calc(80% - 138px)',
-              background: mapGradient
+              background: mapGradient,
+              boxShadow: MAP_THEME === 'light' ? '0 -20px 40px rgba(0, 0, 0, 0.1)' : 'none'
             }}
           />
 
@@ -529,7 +538,10 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
             <LogoDisplay 
               logoData={logoUrl} 
               className="w-full h-full object-contain" 
-              style={{ filter: mapLogoFilter }}
+              style={{ 
+                filter: mapLogoFilter,
+                color: mapLogoColor
+              }}
               alt={hotelName} 
             />
           )}
@@ -540,7 +552,8 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
           className="absolute w-full h-[138px] z-[3] rounded-[0px_0px_20px_20px] pointer-events-none"
           style={{
             top: 'calc(80% - 138px)',
-            background: mapGradient
+            background: mapGradient,
+            boxShadow: MAP_THEME === 'light' ? '0 -20px 40px rgba(0, 0, 0, 0.1)' : 'none'
           }}
         />
 
