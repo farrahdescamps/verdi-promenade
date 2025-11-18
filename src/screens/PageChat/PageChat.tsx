@@ -5,6 +5,7 @@ import { ChatBubble } from './ChatBubble';
 import { WhatsAppModal } from './WhatsAppModal';
 import { hotelChatService, ChatMessage } from '../../services/hotelChatService';
 import { useTheme } from '../../contexts/ThemeContext';
+import { HOTEL_NAME } from '../../config';
 import { useTranslation } from '../../locales';
 
 export const PageChat: React.FC = () => {
@@ -183,11 +184,11 @@ export const PageChat: React.FC = () => {
           paddingBottom: '1rem'
         }}
       >
-        {/* Message de bienvenue de Kube (toujours affiché) */}
+        {/* Message de bienvenue de l'assistant (toujours affiché) */}
         {messages.length === 0 && !isStreaming && (
           <div className="flex mb-4 justify-start animate-fadeIn">
             <div className="flex items-start gap-2 max-w-[80%]">
-              {/* Logo Kube en pastille - plus petite */}
+              {/* Logo de l'hôtel en pastille - plus petite */}
               <div 
                 className="flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center bg-white"
                 style={{ borderColor: primaryColor || '#690217' }}
@@ -201,7 +202,7 @@ export const PageChat: React.FC = () => {
                 ) : logoUrl ? (
                   <img
                     src={logoUrl}
-                    alt="Kube"
+                    alt={HOTEL_NAME}
                     className="w-5 h-5 object-contain"
                     style={{ 
                       filter: `brightness(0) saturate(100%)`,
@@ -239,7 +240,7 @@ export const PageChat: React.FC = () => {
         {isStreaming && !currentAssistantMessage && (
           <div className="flex mb-4 justify-start animate-fadeIn">
             <div className="flex items-start gap-2 max-w-[80%]">
-              {/* Logo Kube en pastille */}
+              {/* Logo de l'hôtel en pastille */}
               <div 
                 className="flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center bg-white"
                 style={{ borderColor: primaryColor || '#690217' }}
@@ -253,7 +254,7 @@ export const PageChat: React.FC = () => {
                 ) : logoUrl ? (
                   <img
                     src={logoUrl}
-                    alt="Kube"
+                    alt={HOTEL_NAME}
                     className="w-5 h-5 object-contain"
                     style={{ 
                       filter: `brightness(0) saturate(100%)`,

@@ -19,7 +19,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   server: {
-    host: true, // Permet l'accès depuis d'autres appareils sur le réseau
+    host: 'localhost', // Accès local uniquement (évite les erreurs réseau)
     port: 5175, // Port utilisé par votre app
     // Configuration pour éviter les erreurs 404 au rafraîchissement
     historyApiFallback: true,

@@ -10,6 +10,7 @@ export const CONCIERGE_API_BASE_URL = (import.meta.env.VITE_CONCIERGE_API_URL ||
 
 export const API_KEY = import.meta.env.VITE_API_KEY || '';
 export const HOTEL_ID = import.meta.env.VITE_HOTEL_ID || '';
+export const HOTEL_NAME = import.meta.env.VITE_HOTEL_NAME || 'Hotel';
 
 // Fonction pour générer les headers d'API avec authentification
 export function apiHeaders(): Record<string, string> {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChatMessage } from '../../services/hotelChatService';
 import { useTheme } from '../../contexts/ThemeContext';
+import { HOTEL_NAME } from '../../config';
 
 interface ChatBubbleProps {
   message: ChatMessage;
@@ -18,10 +19,10 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isStreaming = f
         animation: 'fadeInUp 0.3s ease-out'
       }}
     >
-      {/* Message Assistant (Kube) */}
+      {/* Message Assistant */}
       {!isUser && (
         <div className="flex items-start gap-2 max-w-[80%]">
-          {/* Logo Kube en pastille - plus petite avec bordure légère */}
+          {/* Logo de l'hôtel en pastille - plus petite avec bordure légère */}
           <div 
             className="flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center bg-white"
             style={{ borderColor: primaryColor || '#690217' }}
@@ -35,7 +36,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isStreaming = f
             ) : logoUrl ? (
               <img
                 src={logoUrl}
-                alt="Kube"
+                alt={HOTEL_NAME}
                 className="w-5 h-5 object-contain"
                 style={{ 
                   filter: `brightness(0) saturate(100%)`,

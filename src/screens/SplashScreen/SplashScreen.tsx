@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSession } from "../../contexts/SessionContext";
 import { fetchHotelVideos, HotelVideoData } from "../../services/videoService";
+import { HOTEL_NAME } from "../../config";
 import { fetchLanguages, Language } from "../../services/languageService";
 import { createHotelSession } from "../../services/hotelSessionService";
 import { useTranslation } from "../../locales";
@@ -274,7 +275,7 @@ export const SplashScreen = (): JSX.Element => {
           <div className="px-[29px] mb-12 flex-shrink-0">
             <h1 className="text-[45px] leading-[53px]" style={{ fontFamily: 'Playfair Display', fontWeight: 300 }}>
               <span style={{ color: hotelData?.couleur_primaire || 'var(--color-primary)' }}>
-                {hotelData?.hotel_name || 'Kube'},
+                {hotelData?.hotel_name || HOTEL_NAME},
               </span>
               <br />
               <span className="text-white">

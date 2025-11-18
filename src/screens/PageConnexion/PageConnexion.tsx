@@ -92,8 +92,20 @@ export const PageConnexion = (): JSX.Element => {
 
       // Charger les thèmes depuis l'API après la connexion
       console.log('%c📡 LOGIN - Chargement themes...', 'background: #f59e0b; color: white; padding: 4px 8px;');
-      await loadThemes();
-      console.log('%c✅ LOGIN - Themes chargés', 'background: #10b981; color: white; padding: 4px 8px;');
+      const hotelSessionId = localStorage.getItem('hotel_session_id');
+      console.log('%c🔍 LOGIN - hotel_session_id:', 'background: #8b5cf6; color: white; padding: 4px 8px;', hotelSessionId);
+      
+      if (hotelSessionId) {
+        try {
+          await loadThemes();
+          console.log('%c✅ LOGIN - Themes chargés', 'background: #10b981; color: white; padding: 4px 8px;');
+        } catch (themeError) {
+          console.log('%c⚠️ LOGIN - Erreur chargement themes (continuer quand même)', 'background: #f59e0b; color: white; padding: 4px 8px;', themeError);
+          // Continuer même si le chargement des thèmes échoue
+        }
+      } else {
+        console.log('%c⚠️ LOGIN - Pas de hotel_session_id, skip themes', 'background: #f59e0b; color: white; padding: 4px 8px;');
+      }
       
       // Attendre un peu que ThemeContext soit aussi chargé
       // (il se charge en parallèle au montage de l'app)
