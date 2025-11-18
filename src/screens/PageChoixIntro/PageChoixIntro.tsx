@@ -13,6 +13,7 @@ import { useSession } from "../../contexts/SessionContext";
 import { sendHybridMatch } from "../../services/activityService";
 import { MatchedActivity } from "../../services/sessionService";
 import { fetchTinderCards } from "../../services/tinderService";
+import { MAP_THEME } from "../../config";
 import { useTheme } from "../../contexts/ThemeContext";
 import { LogoDisplay } from "../../utils/logoUtils";
 import { CONCIERGE_API_BASE_URL, API_KEY } from "../../config";
@@ -502,7 +503,7 @@ export const PageChoixIntro = (): JSX.Element => {
   return (
     <div className="bg-transparent w-full h-screen max-h-screen overflow-hidden relative" style={{ paddingTop: 'var(--sat)' }}>
       {/* Interactive Map Background - Full screen */}
-      <InteractiveMap />
+      <InteractiveMap mapTheme={MAP_THEME} />
 
       {/* Header */}
       <Header title={isCardExpanded ? t('choice.title') : t('journey.title')} />

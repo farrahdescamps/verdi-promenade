@@ -21,6 +21,7 @@ interface InteractiveMapProps {
   pois?: POI[];
   onPoiClick?: (poi: POI) => void;
   showHotelPin?: boolean; // Contrôler l'affichage du pin de l'hôtel
+  mapTheme?: 'light' | 'dark'; // Mode clair ou sombre pour la carte
 }
 
 // Custom component to handle map bounds adjustment
@@ -42,7 +43,7 @@ const MapBoundsController: React.FC<{ pois: POI[] }> = ({ pois }) => {
   return null;
 };
 
-export const InteractiveMap: React.FC<InteractiveMapProps> = ({ children, pois = [], onPoiClick, showHotelPin = true }) => {
+export const InteractiveMap: React.FC<InteractiveMapProps> = ({ children, pois = [], onPoiClick, showHotelPin = true, mapTheme = 'dark' }) => {
   const navigate = useNavigate();
   const { logoUrl, primaryColor, secondaryColor, hotelLatitude, hotelLongitude, hotelName } = useTheme();
   
@@ -233,7 +234,10 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ children, pois =
       wheelPxPerZoomLevel={60}
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url={mapTheme === 'light' 
+          ? "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          : "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        }
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
         // Options pour préchargement et fluidité
         keepBuffer={4}

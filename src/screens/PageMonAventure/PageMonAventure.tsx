@@ -11,6 +11,7 @@ import { LogoDisplay } from "../../utils/logoUtils";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { fetchThemeDisplay, ThemeDisplayPOI } from "../../services/themeDisplayService";
 import { fetchThemes } from "../../services/themesService";
+import { MAP_THEME } from "../../config";
 import { BackButton } from "../../components/BackButton";
 import { 
   CameraIcon, 
@@ -408,6 +409,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
             <InteractiveMap 
               pois={displayedPois} 
               showHotelPin={true}
+              mapTheme={MAP_THEME}
             />
           </div>
 
@@ -500,6 +502,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
             pois={displayedPois} 
             onPoiClick={handleMapPoiClick}
             showHotelPin={!selectedThemeId} // Cacher le pin de l'hôtel si un thème est sélectionné
+            mapTheme={MAP_THEME}
           />
         </div>
 
