@@ -21,7 +21,7 @@ const TYPE_TO_MENU_CONFIG: Record<string, Omit<MenuItem, 'id' | 'type' | 'catego
     icon: "/img/hotel-icon.svg",
     textKey: "home.enjoyYourStay",
     iconAlt: "Hotel",
-    path: "/enjoy-stay", // Navigation directe vers les services de l'hôtel (pas de Tinder pour hotel)
+    path: "/page-choix-intro", // Passe par Tinder - skip auto si aucune carte
   },
   'restaurant': {
     icon: "/img/restaurant-icon.svg",

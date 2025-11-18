@@ -105,9 +105,11 @@ export const PageChoixIntro = (): JSX.Element => {
 
           // Si aucune carte Tinder disponible, skip cet écran
           if (convertedThemes.length === 0) {
-            console.log('%c⚠️ AUCUNE CARTE TINDER - Skip vers /journey', 'background: #f59e0b; color: white; font-weight: bold; padding: 4px 8px;');
+            // Pour hotel, on va vers /enjoy-stay, sinon vers /journey
+            const destination = category === 'hotel' ? '/enjoy-stay' : '/journey';
+            console.log(`%c⚠️ AUCUNE CARTE TINDER - Skip vers ${destination}`, 'background: #f59e0b; color: white; font-weight: bold; padding: 4px 8px;');
             setLoadingThemes(false);
-            navigate('/journey', { state: { category, skipTinder: true } });
+            navigate(destination, { state: { category, skipTinder: true } });
             return;
           }
 
@@ -124,9 +126,11 @@ export const PageChoixIntro = (): JSX.Element => {
         
         // En cas d'erreur lors du chargement Tinder, skip l'écran aussi
         if (category) {
-          console.log('%c⚠️ ERREUR TINDER - Skip vers /journey', 'background: #ef4444; color: white; font-weight: bold; padding: 4px 8px;');
+          // Pour hotel, on va vers /enjoy-stay, sinon vers /journey
+          const destination = category === 'hotel' ? '/enjoy-stay' : '/journey';
+          console.log(`%c⚠️ ERREUR TINDER - Skip vers ${destination}`, 'background: #ef4444; color: white; font-weight: bold; padding: 4px 8px;');
           setLoadingThemes(false);
-          navigate('/journey', { state: { category, skipTinder: true } });
+          navigate(destination, { state: { category, skipTinder: true } });
           return;
         }
         
