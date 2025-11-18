@@ -157,7 +157,7 @@ export const PageChat: React.FC = () => {
               <div className="flex justify-center">
                 {logoUrl.startsWith('<svg') ? (
                   <div
-                    className="w-10 h-10 [&>svg]:w-full [&>svg]:h-full [&_path]:fill-white [&_circle]:fill-white [&_rect]:fill-white [&_polygon]:fill-white"
+                    className="w-16 h-16 [&>svg]:w-full [&>svg]:h-full [&_path]:fill-white [&_circle]:fill-white [&_rect]:fill-white [&_polygon]:fill-white"
                     style={{ color: 'white' }}
                     dangerouslySetInnerHTML={{ __html: logoUrl }}
                   />
@@ -165,7 +165,7 @@ export const PageChat: React.FC = () => {
                   <img
                     src={logoUrl}
                     alt={hotelName}
-                    className="w-10 h-10 object-contain"
+                    className="w-16 h-16 object-cover rounded-lg"
                     style={{ filter: 'brightness(0) invert(1)' }}
                   />
                 )}
@@ -188,14 +188,14 @@ export const PageChat: React.FC = () => {
         {messages.length === 0 && !isStreaming && (
           <div className="flex mb-4 justify-start animate-fadeIn">
             <div className="flex items-start gap-2 max-w-[80%]">
-              {/* Logo de l'hôtel en pastille - plus petite */}
+              {/* Logo de l'hôtel en pastille - adaptatif */}
               <div 
-                className="flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center bg-white"
+                className="flex-shrink-0 w-8 h-8 rounded-full border flex items-center justify-center bg-white overflow-hidden"
                 style={{ borderColor: primaryColor || '#690217' }}
               >
                 {logoUrl && logoUrl.startsWith('<svg') ? (
                   <div
-                    className="w-5 h-5 [&>svg]:w-full [&>svg]:h-full [&_path]:fill-current [&_circle]:fill-current [&_rect]:fill-current [&_polygon]:fill-current"
+                    className="w-7 h-7 [&>svg]:w-full [&>svg]:h-full [&_path]:fill-current [&_circle]:fill-current [&_rect]:fill-current [&_polygon]:fill-current"
                     style={{ color: primaryColor || '#690217' }}
                     dangerouslySetInnerHTML={{ __html: logoUrl }}
                   />
@@ -203,14 +203,14 @@ export const PageChat: React.FC = () => {
                   <img
                     src={logoUrl}
                     alt={HOTEL_NAME}
-                    className="w-5 h-5 object-contain"
+                    className="w-7 h-7 object-cover"
                     style={{ 
                       filter: `brightness(0) saturate(100%)`,
                       color: primaryColor || '#690217'
                     }}
                   />
                 ) : (
-                  <div className="w-5 h-5 rounded-full" style={{ backgroundColor: primaryColor || '#690217' }} />
+                  <div className="w-6 h-6 rounded-full" style={{ backgroundColor: primaryColor || '#690217' }} />
                 )}
               </div>
 
