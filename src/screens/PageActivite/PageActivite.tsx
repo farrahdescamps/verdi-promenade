@@ -614,7 +614,7 @@ const PageActivite: React.FC = () => {
 
   // Vue normale de l'activité avec slideshow global
   return (
-    <div className="w-full min-h-screen overflow-y-auto bg-gray-50">
+    <div className="w-full h-screen overflow-y-auto bg-gray-50">
       {/* Header fixe avec slideshow global */}
         <div className={`fixed left-0 right-0 rounded-b-[20px] overflow-hidden`}
         style={{ 

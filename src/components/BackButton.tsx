@@ -6,14 +6,15 @@ import { MAP_THEME } from '../config';
 interface BackButtonProps {
   onClick?: () => void;
   className?: string;
+  isOnMap?: boolean; // Indique si on est sur une page avec carte (map)
 }
 
-export const BackButton: React.FC<BackButtonProps> = ({ onClick, className = '' }) => {
+export const BackButton: React.FC<BackButtonProps> = ({ onClick, className = '', isOnMap = false }) => {
   const navigate = useNavigate();
   const { primaryColor } = useTheme();
   
-  // Adapter la couleur selon le thème de la carte
-  const buttonColor = MAP_THEME === 'light' ? (primaryColor || '#690217') : 'white';
+  // Blanc par défaut, SAUF sur la map en mode light → primaryColor
+  const buttonColor = (isOnMap && MAP_THEME === 'light') ? (primaryColor || '#690217') : 'white';
 
   const handleClick = () => {
     if (onClick) {

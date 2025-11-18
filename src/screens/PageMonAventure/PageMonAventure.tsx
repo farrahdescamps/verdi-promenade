@@ -595,7 +595,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
 
         {/* Bouton retour */}
         <div className="absolute top-[20px] left-[23px] z-[7]">
-          <BackButton onClick={() => navigate('/home')} />
+          <BackButton onClick={() => navigate('/home')} isOnMap={true} />
         </div>
 
         {/* Indicateur de loading */}
