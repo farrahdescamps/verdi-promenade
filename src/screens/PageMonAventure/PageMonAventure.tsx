@@ -219,7 +219,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
   
   // Dégradé adapté au thème
   const mapGradient = MAP_THEME === 'light'
-    ? `linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.7) 50%, rgba(255, 255, 255, 0.95) 100%)`
+    ? `linear-gradient(180deg, rgba(244, 249, 253, 0) 0%, rgba(244, 249, 253, 0.85) 50%, rgba(244, 249, 253, 1) 100%)`
     : `linear-gradient(180deg, rgba(105, 2, 23, 0) 0%, rgba(105, 2, 23, 0.5) 50%, ${primaryColor || '#690217'} 100%)`;
 
   const activities = tinderResults 

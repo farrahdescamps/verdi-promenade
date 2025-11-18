@@ -18,6 +18,13 @@ import { useTheme } from "../../contexts/ThemeContext";
 import { LogoDisplay } from "../../utils/logoUtils";
 import { CONCIERGE_API_BASE_URL, API_KEY } from "../../config";
 
+// Adapter les couleurs selon le thème de la carte
+const useMapThemeColors = () => {
+  const { primaryColor } = useTheme();
+  const mapTextColor = MAP_THEME === 'light' ? (primaryColor || '#690217') : 'white';
+  return { mapTextColor };
+};
+
 export const PageChoixIntro = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -28,6 +35,7 @@ export const PageChoixIntro = (): JSX.Element => {
   const [showTalkWithOceaneModal, setShowTalkWithOceaneModal] = useState(false);
   const { t } = useTranslation();
   const { currentLanguage } = useLanguage();
+  const { mapTextColor } = useMapThemeColors();
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
   const { primaryColor, logoUrl, hotelName } = useTheme();
   
@@ -558,11 +566,12 @@ export const PageChoixIntro = (): JSX.Element => {
                     : 'opacity-100 duration-500'
               }`}>
                 <h1 
-                  className="text-white text-center font-bold text-[25px] leading-[27px]"
+                  className="text-center font-bold text-[25px] leading-[27px]"
                   style={{
                     fontFamily: 'Playfair Display',
                     fontWeight: 700,
-                    letterSpacing: '-0.165px'
+                    letterSpacing: '-0.165px',
+                    color: mapTextColor
                   }}
                 >
                   {t('choice.buildAdventure')}
@@ -571,7 +580,8 @@ export const PageChoixIntro = (): JSX.Element => {
                 <p 
                   className="text-center text-sm font-normal leading-normal"
                   style={{
-                    color: 'rgba(255, 255, 255, 0.80)',
+                    color: mapTextColor,
+                    opacity: 0.8,
                     fontFamily: 'Inter',
                     letterSpacing: '-0.165px'
                   }}

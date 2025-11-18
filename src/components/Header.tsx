@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTheme } from '../contexts/ThemeContext';
+import { MAP_THEME } from '../config';
 
 interface HeaderProps {
   title: string;
@@ -6,10 +8,16 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ title, showIcon = false }) => {
+  const { primaryColor } = useTheme();
+  const headerTextColor = MAP_THEME === 'light' ? (primaryColor || '#690217') : 'white';
+  
   return (
     <>
       {/* Header text */}
-      <div className="absolute w-[262px] h-[27px] top-[40px] left-[29px] [font-family:'Inter-SemiBold',Helvetica] font-semibold text-white text-sm tracking-[1.40px] leading-[56px] whitespace-nowrap z-20 flex items-center">
+      <div 
+        className="absolute w-[262px] h-[27px] top-[40px] left-[29px] [font-family:'Inter-SemiBold',Helvetica] font-semibold text-sm tracking-[1.40px] leading-[56px] whitespace-nowrap z-20 flex items-center"
+        style={{ color: headerTextColor }}
+      >
         {showIcon && (
           <svg 
             className="w-4 h-5 mr-3 flex-shrink-0" 
@@ -28,11 +36,14 @@ export const Header: React.FC<HeaderProps> = ({ title, showIcon = false }) => {
             </defs>
           </svg>
         )}
-        <span className="text-white">{title}</span>
+        <span>{title}</span>
       </div>
 
       {/* Separator Line */}
-      <div className="absolute w-[213px] h-px top-[75px] left-0 bg-white z-20"></div>
+      <div 
+        className="absolute w-[213px] h-px top-[75px] left-0 z-20"
+        style={{ backgroundColor: headerTextColor }}
+      ></div>
     </>
   );
 };
