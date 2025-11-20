@@ -12,11 +12,18 @@
 @tailwind utilities;
 
 @layer base {
-  /* Utiliser la vraie hauteur de viewport (sans barres système) */
-  html, body {
-    height: 100vh;
-    height: 100dvh; /* Dynamic viewport height - vraie hauteur sans barres */
-    overflow: hidden;
+  /* Utiliser la vraie hauteur de viewport tout en conservant le scroll natif */
+  html,
+  body {
+    height: auto;
+    min-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+  
+  body {
+    min-height: 100vh;
+    min-height: 100dvh;
   }
   
   /* Support des safe-areas pour Safari */
@@ -136,9 +143,7 @@
   /* Fix for iOS Safari address bar issues */
   @supports (-webkit-touch-callout: none) {
     html, body, #app {
-      height: var(--app-height, 100vh);
       min-height: var(--app-height, 100vh);
-      max-height: var(--app-height, 100vh);
     }
   }
 
