@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -351,24 +351,12 @@ const PageActivite: React.FC = () => {
       const deltaX = Math.abs(currentX - startX);
       const deltaY = Math.abs(currentY - startY);
       
-      // Attendre un mouvement suffisant pour décider (10px)
       if (deltaX < 10 && deltaY < 10) return;
+      if (isVerticalScroll || isHorizontalSwipe) return;
       
-      // Si déjà décidé que c'est un scroll vertical, laisser passer
-      if (isVerticalScroll) return;
-      
-      // Si déjà décidé que c'est horizontal, continuer à bloquer le scroll
-      if (isHorizontalSwipe) {
-        e.preventDefault();
-        return;
-      }
-      
-      // Décider maintenant : horizontal si deltaX est clairement supérieur
-      if (deltaX > deltaY) {
+      if (deltaX > deltaY * 1.3) {
         isHorizontalSwipe = true;
-        e.preventDefault();
       } else {
-        // C'est un scroll vertical, ne plus interférer
         isVerticalScroll = true;
       }
     };
@@ -399,7 +387,7 @@ const PageActivite: React.FC = () => {
 
     // Attacher les event listeners avec { passive: false } sur touchmove uniquement
     swipeArea.addEventListener('touchstart', handleTouchStart, { passive: true });
-    swipeArea.addEventListener('touchmove', handleTouchMove, { passive: false });
+    swipeArea.addEventListener('touchmove', handleTouchMove, { passive: true });
     swipeArea.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     return () => {
@@ -411,29 +399,26 @@ const PageActivite: React.FC = () => {
 
   // Gestion du slideshow spécifique (depuis un POI)
   const handleSlideshowClick = useCallback(async (poiId: string, skipSlideIndexUpdate = false) => {
-    if (!activityId) return;
+    if (!activityId || !activityDetails?.pois) return;
 
     try {
-
-      // Trouver l'index du POI et le définir comme slide actuel SEULEMENT si pas de bascule de format
       if (!skipSlideIndexUpdate) {
-        let poiIndex = -1;
-        if (activityDetails?.pois) {
-          poiIndex = activityDetails.pois.findIndex(p => p.poi_id === poiId);
-          if (poiIndex !== -1) {
-            setCurrentSlideIndex(poiIndex);
-          }
+        const poiIndex = activityDetails.pois.findIndex(p => p.poi_id === poiId);
+        if (poiIndex !== -1) {
+          setCurrentSlideIndex(poiIndex);
         }
       }
-      
-      // Utiliser activityId comme themeId pour l'appel API
+
+      setIsSlideshowActive(true);
+      setSlideshowDetails(prev => prev ?? { activity_id: activityId, poi_id: poiId, poi_name: '', activity_name: '', slideshow: { photos: [] } });
+
       const slideshowData = await fetchSlideshowDetails(activityId, poiId, currentLanguage);
       setSlideshowDetails(slideshowData);
-      setCurrentSlideshowPoiIndex(0); // Toujours commencer à 0 pour le slideshow
-      setIsSlideshowActive(true);
-
+      setCurrentSlideshowPoiIndex(0);
     } catch (error) {
-
+      console.error('Erreur slideshow', error);
+      setIsSlideshowActive(false);
+      setSlideshowDetails(null);
     }
   }, [activityId, currentLanguage, activityDetails?.pois]);
 
@@ -493,7 +478,6 @@ const PageActivite: React.FC = () => {
 
   // Gérer le clic sur "J'ai une question"
   const handleHaveQuestionClick = useCallback(() => {
-    // Navigation vers le module de chat
     navigate('/chat');
   }, [navigate]);
 
@@ -573,30 +557,29 @@ const PageActivite: React.FC = () => {
     setError(errorMessage);
   }, []);
 
+  const headerHeightPx = useMemo(() => {
+    if (typeof window !== 'undefined') {
+      if (isPodcastPoiActive) return window.innerHeight * 0.6;
+      if (isSlideshowActive) return window.innerHeight * 0.6;
+      if (isMiniGuideActive) return window.innerHeight * 0.75;
+    }
+    return 280;
+  }, [isPodcastPoiActive, isSlideshowActive, isMiniGuideActive]);
+
   // Fonction pour scroller vers un POI spécifique
   const scrollToPoi = useCallback((poiId: string) => {
-
-    // Trouver l'élément POI dans le DOM
-    const poiElement = document.querySelector(`[data-poi-id="${poiId}"]`);
-
-    if (poiElement) {
-      // Approche simple : scrollIntoView avec un petit délai
-
-      // Petit délai pour s'assurer que le DOM est stable
+    const poiElement = document.querySelector(`[data-poi-id="${poiId}"]`) as HTMLElement | null;
+    if (poiElement && typeof window !== 'undefined') {
       setTimeout(() => {
-        poiElement.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center', // Centrer au lieu de 'start'
-          inline: 'nearest'
+        const elementY = poiElement.getBoundingClientRect().top + window.pageYOffset;
+        const offset = headerHeightPx + 16;
+        window.scrollTo({
+          top: Math.max(elementY - offset, 0),
+          behavior: 'smooth'
         });
-        
-
       }, 50);
-      
-        } else {
-
     }
-  }, []);
+  }, [headerHeightPx]);
 
 
   // Fonction pour obtenir l'icône d'un tag
@@ -659,39 +642,86 @@ const PageActivite: React.FC = () => {
   // Le slideshow est maintenant intégré dans la vue principale avec animation
 
   // Vue normale de l'activité avec slideshow global
+  const headerHeight = `${headerHeightPx}px`;
+
   return (
-    <div className="w-full min-h-screen bg-gray-50">
-      {/* Header fixe avec slideshow global */}
-        <div className={`fixed left-0 right-0 rounded-b-[20px] overflow-hidden`}
-        style={{ 
-          top: 'var(--sat)',
-          backgroundColor: 'var(--color-primary)', 
-          transition: 'height 500ms ease-in-out',
-          height: isPodcastPoiActive 
-            ? '60vh' 
-            : isSlideshowActive 
-              ? '60vh' 
-              : isMiniGuideActive 
-                ? '75vh' 
-                : '280px',
-          zIndex: 100 // Header TOUJOURS au-dessus du contenu (était z-10, augmenté pour clarté)
-        }}>
+    <div className="w-full min-h-screen bg-gray-50 overflow-y-auto">
+      <div className="w-full max-w-[375px] mx-auto pb-safe-area-inset-bottom">
+        {/* Header fixe avec slideshow global */}
+        <div
+          className="fixed left-1/2 -translate-x-1/2 rounded-b-[20px] overflow-hidden"
+          style={{ 
+            top: 'var(--sat)',
+            width: '100%',
+            maxWidth: '375px',
+            backgroundColor: 'var(--color-primary)', 
+            transition: 'height 500ms ease-in-out',
+            height: headerHeight,
+            zIndex: 40
+          }}>
           <div className="relative w-full h-full" style={{ backgroundColor: 'var(--color-primary)' }}>
           
           {/* Slideshow POI (quand isSlideshowActive est true) */}
-          {isSlideshowActive && slideshowDetails ? (
-            <SlideshowView
-              activityId={activityId!}
-              poiId={slideshowDetails.poi_id}
-              currentLanguage={currentLanguage}
-              activityColor={primaryColor || "#690217"}
-              onClose={handleSlideshowClose}
-              onError={handleError}
-              onSlideChange={setCurrentSlideshowPoiIndex}
-              poiVideoUrl={activityDetails.pois.find(poi => poi.poi_id === slideshowDetails.poi_id)?.video_url}
-              poiDescription={activityDetails.pois.find(poi => poi.poi_id === slideshowDetails.poi_id)?.description}
-              initialSlideIndex={currentSlideshowPoiIndex}
-            />
+          {isSlideshowActive ? (
+            slideshowDetails ? (
+              <SlideshowView
+                activityId={activityId!}
+                poiId={slideshowDetails.poi_id}
+                currentLanguage={currentLanguage}
+                activityColor={primaryColor || "#690217"}
+                onClose={handleSlideshowClose}
+                onError={handleError}
+                onSlideChange={setCurrentSlideshowPoiIndex}
+                poiVideoUrl={activityDetails.pois.find(poi => poi.poi_id === slideshowDetails.poi_id)?.video_url}
+                poiDescription={activityDetails.pois.find(poi => poi.poi_id === slideshowDetails.poi_id)?.description}
+                initialSlideIndex={currentSlideshowPoiIndex}
+              />
+            ) : (
+              <>
+                <div
+                  ref={swipeAreaRef}
+                  className="w-full h-full relative"
+                  style={{ touchAction: 'pan-y' }}
+                >
+                  {(() => {
+                    const currentPoi = activityDetails.pois[currentSlideIndex];
+                    const hasPoiVideo = currentPoi && currentPoi.video_url && currentPoi.video_url.trim() !== '';
+                    const photoUrl = currentPoi?.photo_url || activityDetails.photo_url;
+                    return hasPoiVideo ? (
+                      <VideoPlayer
+                        src={currentPoi.video_url!}
+                        className={`w-full h-full object-cover transition-all duration-700 ease-out ${
+                          isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+                        }`}
+                        key={`activity-video-${activityDetails.activity_id}-${videoKey}-${currentPoi.poi_id}`}
+                        autoPlay loop muted playsInline poster={photoUrl}
+                      />
+                    ) : (
+                      <div 
+                        className={`w-full h-full bg-cover bg-center transition-all duration-700 ease-out ${
+                          isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+                        }`}
+                        style={{ backgroundImage: `url(${photoUrl})` }}
+                        key={`activity-photo-${activityDetails.activity_id}-${currentPoi?.poi_id}`}
+                      />
+                    );
+                  })()}
+                </div>
+                {activityDetails.pois.length > 1 && !isPodcastPoiActive && !isMiniGuideActive && (
+                  <div className="absolute flex items-center justify-center gap-1 h-1.5 bottom-4 left-0 right-0 opacity-[0.93] z-50">
+                    {activityDetails.pois.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => goToSlide(index, true)}
+                        className={`h-1.5 rounded-[7px] bg-white transition-all duration-200 hover:opacity-100 ${
+                          index === currentSlideIndex ? 'w-[25px] opacity-100' : 'w-1.5 opacity-70'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </>
+            )
           ) : isPodcastPoiActive && podcastPoiDetails ? (
             /* Podcast POI (quand isPodcastPoiActive est true) */
             (() => {
@@ -721,6 +751,7 @@ const PageActivite: React.FC = () => {
               <div
                 ref={swipeAreaRef}
                 className="w-full h-full relative"
+                style={{ touchAction: 'pan-y' }}
               >
                 {(() => {
               const currentPoi = activityDetails.pois[currentSlideIndex];
@@ -940,32 +971,21 @@ const PageActivite: React.FC = () => {
           </div>
         </div>
 
-      {/* Contenu principal - DOIT commencer EN DESSOUS du header */}
+        {/* Contenu principal */}
         <div 
-          data-scroll-zone="content-wrapper"
-          className="transition-all duration-500 ease-in-out w-full max-w-[375px] mx-auto"
-        style={{ 
-          // Padding pour que le contenu commence APRÈS le header fixe
-          paddingTop: isPodcastPoiActive 
-            ? 'calc(60vh + var(--sat))' 
-            : isSlideshowActive 
-              ? 'calc(60vh + var(--sat))' 
-              : isMiniGuideActive 
-                ? 'calc(75vh + var(--sat))' 
-                : 'calc(280px + var(--sat))',
-          paddingBottom: 'max(5rem, calc(5rem + var(--sab)))'
-        }}>
-          {/* Contenu blanc avec background opaque - z-index inférieur au header */}
-          <div 
-            data-scroll-zone="white-content"
-            className="relative w-full" style={{ 
-            paddingTop: '30px', 
-            paddingLeft: '20px', 
-            paddingRight: '20px', 
-            paddingBottom: '20px',
-            backgroundColor: '#f9fafb', // Fond opaque
-            zIndex: 1 // EN DESSOUS du header (z-100)
+          className="transition-all duration-500 ease-in-out w-full"
+          style={{ 
+            marginTop: `${headerHeightPx + 24}px`,
+            paddingBottom: 'max(5rem, calc(5rem + var(--sab)))'
           }}>
+          <div 
+            className="relative w-full" style={{ 
+              paddingTop: '30px', 
+              paddingLeft: '20px', 
+              paddingRight: '20px', 
+              paddingBottom: '20px',
+              backgroundColor: '#f9fafb'
+            }}>
           {/* Contenu du podcast POI */}
           {isPodcastPoiActive && podcastPoiDetails ? (
             /* Contenu du podcast POI */
@@ -1480,14 +1500,18 @@ const PageActivite: React.FC = () => {
             </div>
           ) : (
             /* Message si pas de POIs - seulement si pas de slideshow, podcast, mini-guide ou reviews actif */
-            !isSlideshowActive && !isPodcastPoiActive && !isMiniGuideActive && !isReviewsActive && (
+            !isSlideshowActive &&
+            !isPodcastPoiActive &&
+            !isMiniGuideActive &&
+            !isReviewsActive && (
               <div className="text-center py-8">
                 <p className="text-gray-500 text-sm">{t('common.noPOI')}</p>
-          </div>
+              </div>
             )
-        )}
-      </div>
+          )}
         </div>
+      </div>
+    </div>
 
 
       {/* Modal de développement */}

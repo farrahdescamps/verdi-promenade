@@ -92,17 +92,12 @@ const router = createBrowserRouter([
 export const App = () => {
   return (
     <ThemeProvider>
-      <div className="h-app max-h-app relative">
-        {/* Fallback background - supprimé */}
-
-        {/* Content layer */}
-        <div className="relative z-10 h-app bg-transparent">
+      <div className="relative min-h-screen bg-transparent overflow-y-auto">
+        <div className="relative z-10 min-h-screen">
           <SessionProvider>
             <RouterProvider router={router} />
           </SessionProvider>
         </div>
-
-        {/* Reset button - Dev uniquement */}
         <ResetButton />
       </div>
     </ThemeProvider>
