@@ -29,6 +29,13 @@ const PageActivite: React.FC = () => {
   const { activityId } = useParams<{ activityId: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const locationState = location.state as { 
+    scrollToPoiId?: string; 
+    poiName?: string; 
+    poiVideoUrl?: string;
+    poiPhotoUrl?: string;
+    poiIndex?: number;
+  } | null;
   const { currentLanguage } = useLanguage();
   const { t } = useTranslation();
   const { sessionData } = useSession();
@@ -172,16 +179,27 @@ const PageActivite: React.FC = () => {
         } else {
           // Cas normal : charger depuis l'API
           const details = await fetchActivityDetails(activityId, currentLanguage);
+          
+          // Log détaillé pour voir les données des POIs
+          console.log('%c📊 ACTIVITY DETAILS LOADED', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', {
+            activityId,
+            title: details.title,
+            activityPhotoUrl: details.photo_url || 'none',
+            activityVideoUrl: details.video_url || 'none',
+            hasActivityPhoto: !!details.photo_url,
+            poisCount: details.pois?.length || 0,
+            pois: details.pois?.map(poi => ({
+              poi_id: poi.poi_id,
+              title: poi.title,
+              hasVideo: !!poi.video_url,
+              hasPhoto: !!poi.photo_url,
+              video_url: poi.video_url || 'none',
+              photo_url: poi.photo_url || 'none'
+            })) || []
+          });
+          
           setActivityDetails(details);
         }
-        
-        // Gérer le scroll vers un POI spécifique si fourni dans l'état de navigation
-        const locationState = location.state as { 
-          scrollToPoiId?: string; 
-          poiName?: string; 
-          poiVideoUrl?: string;
-          poiIndex?: number;
-        } | null;
         
         if (locationState?.scrollToPoiId) {
 
@@ -251,7 +269,7 @@ const PageActivite: React.FC = () => {
     };
 
     loadActivityDetails();
-  }, [activityId, currentLanguage, location.state, isHotelCategory, hotelStayData, hotelCategoryKey, hotelCategoryTitle, primaryColor, secondaryColor]);
+  }, [activityId, currentLanguage, locationState, isHotelCategory, hotelStayData, hotelCategoryKey, hotelCategoryTitle, primaryColor, secondaryColor]);
 
   // Auto-play du slideshow global
   useEffect(() => {
@@ -298,6 +316,20 @@ const PageActivite: React.FC = () => {
   const goToSlide = useCallback((index: number, isManual = false) => {
     if (isTransitioning || !activityDetails?.pois) return;
     
+    const currentPoi = activityDetails.pois[index];
+    
+    console.log('%c🔄 SLIDE CHANGE', 'background: #3b82f6; color: white; font-weight: bold; padding: 4px 8px;', {
+      index,
+      poiId: currentPoi?.poi_id,
+      poiTitle: currentPoi?.title,
+      poiHasVideo: !!currentPoi?.video_url,
+      poiHasPhoto: !!currentPoi?.photo_url,
+      poiVideoUrl: currentPoi?.video_url || 'none',
+      poiPhotoUrl: currentPoi?.photo_url || 'none',
+      poiObject: currentPoi, // Log complet du POI pour voir tous les champs
+      activityPhotoUrl: activityDetails.photo_url || 'none'
+    });
+    
       setIsTransitioning(true);
       setCurrentSlideIndex(index);
       
@@ -311,7 +343,7 @@ const PageActivite: React.FC = () => {
       setTimeout(() => {
         setIsTransitioning(false);
     }, 300);
-  }, [isTransitioning, activityDetails?.pois]);
+  }, [isTransitioning, activityDetails?.pois, activityDetails?.photo_url]);
 
   // Navigation précédente
   const goToPreviousSlide = useCallback(() => {
@@ -566,7 +598,66 @@ const PageActivite: React.FC = () => {
     return 280;
   }, [isPodcastPoiActive, isSlideshowActive, isMiniGuideActive]);
 
-  // Fonction pour scroller vers un POI spécifique
+  // Fonction pour récupérer les médias (vidéo/photo) d'un POI avec fallbacks
+  const getPoiMediaById = useCallback((poiId?: string) => {
+    const fallbackPhoto = activityDetails?.photo_url || locationState?.poiPhotoUrl;
+    
+    if (!poiId) {
+      return {
+        video: locationState?.poiVideoUrl,
+        photo: locationState?.poiPhotoUrl || fallbackPhoto
+      };
+    }
+    
+    const poi = activityDetails?.pois.find(p => p.poi_id === poiId);
+    
+    // Vérifier photo_url (peut être dans différents champs)
+    // Note: video_url peut être une chaîne vide "", donc on vérifie aussi ça
+    const poiPhotoUrl = 
+      (poi?.photo_url && typeof poi.photo_url === 'string' && poi.photo_url.trim() !== '') ? poi.photo_url :
+      ((poi as any)?.main_photo_url && typeof (poi as any).main_photo_url === 'string' && (poi as any).main_photo_url.trim() !== '') ? (poi as any).main_photo_url :
+      undefined;
+    
+    // Vérifier video_url (peut être une chaîne vide "", donc on vérifie aussi ça)
+    const poiVideoUrl = 
+      (poi?.video_url && typeof poi.video_url === 'string' && poi.video_url.trim() !== '') ? poi.video_url :
+      ((poi as any)?.main_video_url && typeof (poi as any).main_video_url === 'string' && (poi as any).main_video_url.trim() !== '') ? (poi as any).main_video_url :
+      undefined;
+    
+    // Priorité : poi.photo_url > locationState.poiPhotoUrl (si même POI) > activityDetails.photo_url
+    const photo = poiPhotoUrl || 
+                  (locationState?.scrollToPoiId === poiId && locationState?.poiPhotoUrl ? locationState.poiPhotoUrl : undefined) || 
+                  fallbackPhoto;
+    
+    // Priorité : poi.video_url > locationState.poiVideoUrl (si même POI)
+    const video = poiVideoUrl || 
+                  (locationState?.scrollToPoiId === poiId && locationState?.poiVideoUrl ? locationState.poiVideoUrl : undefined);
+    
+    // Log pour déboguer
+    if (!video && !photo) {
+      console.warn('%c⚠️ NO MEDIA FOUND FOR POI', 'background: #f59e0b; color: white; font-weight: bold; padding: 4px 8px;', {
+        poiId,
+        poiTitle: poi?.title,
+        hasPoiVideo: !!poiVideoUrl,
+        hasPoiPhoto: !!poiPhotoUrl,
+        hasActivityPhoto: !!activityDetails?.photo_url,
+        activityPhotoUrl: activityDetails?.photo_url || 'none',
+        fallbackPhoto: fallbackPhoto || 'none'
+      });
+    } else {
+      console.log('%c✅ MEDIA FOUND FOR POI', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', {
+        poiId,
+        poiTitle: poi?.title,
+        hasVideo: !!video,
+        hasPhoto: !!photo,
+        videoUrl: video || 'none',
+        photoUrl: photo || 'none'
+      });
+    }
+    
+    return { video, photo };
+  }, [activityDetails, locationState]);
+
   const scrollToPoi = useCallback((poiId: string) => {
     const poiElement = document.querySelector(`[data-poi-id="${poiId}"]`) as HTMLElement | null;
     if (poiElement && typeof window !== 'undefined') {
@@ -613,6 +704,16 @@ const PageActivite: React.FC = () => {
         label: tag.label
       }));
   };
+
+  const activeSlideshowMedia = activityDetails && slideshowDetails
+    ? getPoiMediaById(slideshowDetails.poi_id)
+    : undefined;
+  const activePodcastMedia = podcastPoiDetails
+    ? getPoiMediaById(podcastPoiDetails.poi_id)
+    : undefined;
+  const activeMiniGuideMedia = miniGuidePoiDetails
+    ? getPoiMediaById(miniGuidePoiDetails.poi_id)
+    : undefined;
 
   if (loading) {
     return (
@@ -672,11 +773,11 @@ const PageActivite: React.FC = () => {
                 onClose={handleSlideshowClose}
                 onError={handleError}
                 onSlideChange={setCurrentSlideshowPoiIndex}
-                poiVideoUrl={activityDetails.pois.find(poi => poi.poi_id === slideshowDetails.poi_id)?.video_url}
-                poiDescription={activityDetails.pois.find(poi => poi.poi_id === slideshowDetails.poi_id)?.description}
+                poiVideoUrl={activeSlideshowMedia?.video}
+                poiPhotoUrl={activeSlideshowMedia?.photo}
                 initialSlideIndex={currentSlideshowPoiIndex}
               />
-            ) : (
+            ) : activityDetails && activityDetails.pois && activityDetails.pois.length > 0 ? (
               <>
                 <div
                   ref={swipeAreaRef}
@@ -684,25 +785,82 @@ const PageActivite: React.FC = () => {
                   style={{ touchAction: 'pan-y' }}
                 >
                   {(() => {
+                    if (!activityDetails?.pois || activityDetails.pois.length === 0) {
+                      return (
+                        <div 
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ backgroundColor: primaryColor || '#690217' }}
+                        >
+                          <p className="text-white text-sm">Aucun POI disponible</p>
+                        </div>
+                      );
+                    }
+                    
                     const currentPoi = activityDetails.pois[currentSlideIndex];
-                    const hasPoiVideo = currentPoi && currentPoi.video_url && currentPoi.video_url.trim() !== '';
-                    const photoUrl = currentPoi?.photo_url || activityDetails.photo_url;
+                    if (!currentPoi) {
+                      return (
+                        <div 
+                          className="w-full h-full flex items-center justify-center"
+                          style={{ backgroundColor: primaryColor || '#690217' }}
+                        >
+                          <p className="text-white text-sm">POI introuvable</p>
+                        </div>
+                      );
+                    }
+                    
+                    const media = getPoiMediaById(currentPoi.poi_id);
+                    const hasPoiVideo = media.video && typeof media.video === 'string' && media.video.trim() !== '';
+                    const hasPoiPhoto = media.photo && typeof media.photo === 'string' && media.photo.trim() !== '';
+                    
+                    // Log détaillé pour déboguer - TOUJOURS afficher
+                    console.log('%c🔍 SLIDER POI DATA', 'background: #3b82f6; color: white; font-weight: bold; padding: 4px 8px;', {
+                      slideIndex: currentSlideIndex,
+                      poiId: currentPoi.poi_id,
+                      poiTitle: currentPoi.title,
+                      poiHasVideo: !!currentPoi.video_url,
+                      poiHasPhoto: !!currentPoi.photo_url,
+                      poiVideoUrl: currentPoi.video_url || 'none',
+                      poiPhotoUrl: currentPoi.photo_url || 'none',
+                      activityHasPhoto: !!activityDetails.photo_url,
+                      activityPhotoUrl: activityDetails.photo_url || 'none',
+                      finalMediaVideo: media.video || 'none',
+                      finalMediaPhoto: media.photo || 'none',
+                      willShowVideo: hasPoiVideo,
+                      willShowPhoto: hasPoiPhoto,
+                      willShowFallback: !hasPoiVideo && !hasPoiPhoto
+                    });
+                    
                     return hasPoiVideo ? (
                       <VideoPlayer
-                        src={currentPoi.video_url!}
+                        src={media.video!}
                         className={`w-full h-full object-cover transition-all duration-700 ease-out ${
                           isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
                         }`}
-                        key={`activity-video-${activityDetails.activity_id}-${videoKey}-${currentPoi.poi_id}`}
-                        autoPlay loop muted playsInline poster={photoUrl}
+                        key={`activity-video-${activityDetails.activity_id}-${videoKey}-${currentPoi?.poi_id}`}
+                        autoPlay loop muted playsInline poster={hasPoiPhoto ? media.photo : undefined}
+                      />
+                    ) : hasPoiPhoto ? (
+                      <img
+                        src={media.photo!}
+                        alt={currentPoi?.title || activityDetails.title}
+                        className={`w-full h-full object-cover transition-all duration-700 ease-out ${
+                          isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
+                        }`}
+                        key={`activity-photo-${activityDetails.activity_id}-${currentPoi?.poi_id}`}
+                        onError={(e) => {
+                          console.error('%c❌ IMAGE LOAD ERROR', 'background: #ef4444; color: white; font-weight: bold; padding: 4px 8px;', {
+                            src: media.photo,
+                            poiId: currentPoi?.poi_id
+                          });
+                        }}
                       />
                     ) : (
                       <div 
-                        className={`w-full h-full bg-cover bg-center transition-all duration-700 ease-out ${
+                        className={`w-full h-full transition-all duration-700 ease-out ${
                           isTransitioning ? 'opacity-0 scale-105' : 'opacity-100 scale-100'
                         }`}
-                        style={{ backgroundImage: `url(${photoUrl})` }}
-                        key={`activity-photo-${activityDetails.activity_id}-${currentPoi?.poi_id}`}
+                        style={{ backgroundColor: primaryColor || '#690217' }}
+                        key={`activity-fallback-${activityDetails.activity_id}-${currentPoi?.poi_id}`}
                       />
                     );
                   })()}
@@ -721,7 +879,7 @@ const PageActivite: React.FC = () => {
                   </div>
                 )}
               </>
-            )
+            ) : null
           ) : isPodcastPoiActive && podcastPoiDetails ? (
             /* Podcast POI (quand isPodcastPoiActive est true) */
             (() => {
@@ -730,7 +888,8 @@ const PageActivite: React.FC = () => {
                 <PodcastView
                   poiId={podcastPoiDetails.poi_id}
                   activityColor={primaryColor || "#690217"}
-                  poiVideoUrl={activityDetails.pois.find(poi => poi.poi_id === podcastPoiDetails.poi_id)?.video_url}
+                  poiVideoUrl={activePodcastMedia?.video}
+                  poiPhotoUrl={activePodcastMedia?.photo}
                   activityId={activityId || ''}
                 />
               );
@@ -739,7 +898,8 @@ const PageActivite: React.FC = () => {
             /* Mini-Guide POI (quand isMiniGuideActive est true) */
             <MiniGuideView
               poiKey={miniGuidePoiDetails.poi_key}
-              poiVideoUrl={activityDetails.pois.find(poi => poi.poi_id === miniGuidePoiDetails.poi_id)?.video_url}
+              poiVideoUrl={activeMiniGuideMedia?.video}
+              poiPhotoUrl={activeMiniGuideMedia?.photo}
               activityColor={primaryColor || "#690217"}
               onClose={handleCloseMiniGuide}
             />

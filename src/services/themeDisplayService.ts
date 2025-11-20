@@ -11,6 +11,7 @@ export interface ThemeDisplayPOI {
   place_type: string;
   tags: any[];
   video_url: string;
+  photo_url?: string;
   tinder: any;
   actions: {
     podcast: {

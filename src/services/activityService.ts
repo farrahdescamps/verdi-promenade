@@ -167,11 +167,26 @@ export const fetchActivityDetails = async (activityId: string, lang: string): Pr
 
     const responseData = await handleApiResponse(response, url);
     
-    console.log('%c✅ ACTIVITY DETAILS LOADED', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', {
-      activityId,
-      title: responseData.title,
-      poisCount: responseData.pois?.length
-    });
+    // Log détaillé pour voir la structure des POIs
+    if (responseData.pois && responseData.pois.length > 0) {
+      const firstPoi = responseData.pois[0];
+      console.log('%c✅ ACTIVITY DETAILS - FIRST POI COMPLETE', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', firstPoi);
+      console.log('%c✅ ACTIVITY DETAILS - FIRST POI KEYS', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', Object.keys(firstPoi));
+      console.log('%c✅ ACTIVITY DETAILS - FIRST POI ACTIONS', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', firstPoi.actions);
+      console.log('%c✅ ACTIVITY DETAILS - ALL POIS', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', 
+        responseData.pois.map(poi => ({
+          poi_id: poi.poi_id,
+          title: poi.title,
+          video_url: poi.video_url,
+          photo_url: poi.photo_url,
+          main_photo_url: (poi as any).main_photo_url,
+          main_video_url: (poi as any).main_video_url,
+          hasVideo: !!poi.video_url,
+          hasPhoto: !!poi.photo_url,
+          allKeys: Object.keys(poi)
+        }))
+      );
+    }
 
     return responseData;
   } catch (error) {

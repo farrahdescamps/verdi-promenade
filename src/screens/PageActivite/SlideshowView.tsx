@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { Button } from '../../components/ui/button';
 import { fetchSlideshowDetails, SlideshowData } from '../../services/activityService';
 import { useTranslation } from '../../locales';
@@ -12,7 +12,7 @@ interface SlideshowViewProps {
   onError: (error: string) => void;
   onSlideChange?: (index: number) => void;
   poiVideoUrl?: string;
-  poiDescription?: string;
+  poiPhotoUrl?: string;
   initialSlideIndex?: number;
 }
 
@@ -25,7 +25,7 @@ export const SlideshowView: React.FC<SlideshowViewProps> = ({
   onError,
   onSlideChange,
   poiVideoUrl,
-  poiDescription,
+  poiPhotoUrl,
   initialSlideIndex = 0
 }) => {
   const { t } = useTranslation();
@@ -51,22 +51,40 @@ export const SlideshowView: React.FC<SlideshowViewProps> = ({
       const data = await fetchSlideshowDetails(activityId, poiId, currentLanguage);
       setSlideshowDetails(data);
       
-      // Créer les slides avec uniquement les photos du slideshow (pas de vidéo/photo générique)
-      const slides = [];
+      const slides: Array<{type: 'video' | 'image', url: string, caption?: string}> = [];
       
-      // Ajouter uniquement les photos du slideshow
-      if (data.slideshow.photos) {
+      // Ajouter UNIQUEMENT les photos du slideshow (pas de vidéo/photo générique du POI)
+      if (data.slideshow?.photos && Array.isArray(data.slideshow.photos)) {
         data.slideshow.photos.forEach(photo => {
-          slides.push({
-            type: 'image' as const,
-            url: photo.photo_url,
-            caption: photo.caption
-          });
+          if (photo.photo_url && photo.photo_url.trim() !== '') {
+            slides.push({
+              type: 'image' as const,
+              url: photo.photo_url,
+              caption: photo.caption
+            });
+          }
+        });
+      }
+
+      // Fallback : utiliser la photo du POI seulement si pas de slides du slideshow
+      if (slides.length === 0 && poiPhotoUrl && poiPhotoUrl.trim() !== '') {
+        slides.push({ type: 'image', url: poiPhotoUrl });
+      }
+
+      // Dernier fallback : placeholder
+      if (slides.length === 0) {
+        const placeholderSvg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 400'>
+          <rect width='400' height='400' fill='${activityColor}'/>
+          <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='18' fill='white' font-family='Arial'>${t('common.noMedia')}</text>
+        </svg>`;
+        slides.push({
+          type: 'image',
+          url: `data:image/svg+xml;base64,${btoa(placeholderSvg)}`
         });
       }
       
       setCombinedSlides(slides);
-      setCurrentSlideIndex(0);
+      setCurrentSlideIndex(initialSlideIndex || 0);
 
 
     } catch (err) {
@@ -77,12 +95,13 @@ export const SlideshowView: React.FC<SlideshowViewProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [activityId, poiId, currentLanguage, onError, poiVideoUrl]);
+  }, [activityId, poiId, currentLanguage, poiVideoUrl, poiPhotoUrl, activityColor]);
 
   // Charger les données au montage
   React.useEffect(() => {
     loadSlideshowData();
-  }, [loadSlideshowData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activityId, poiId, currentLanguage]);
 
   // Réinitialiser l'autoplay après un délai après un swipe manuel
   useEffect(() => {
@@ -259,12 +278,23 @@ export const SlideshowView: React.FC<SlideshowViewProps> = ({
     );
   }
 
-  if (error || !slideshowDetails || combinedSlides.length === 0) {
+  if (error) {
     return (
       <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-primary)' }}>
         <div className="text-white text-center p-6">
           <div className="text-red-500 text-lg mb-2">{t('error.general')}</div>
-          <div className="text-gray-300 text-sm mb-4">{error || 'Impossible de charger le slideshow ou aucune image disponible'}</div>
+          <div className="text-gray-300 text-sm mb-4">{error}</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!slideshowDetails || combinedSlides.length === 0) {
+    return (
+      <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: 'var(--color-primary)' }}>
+        <div className="text-white text-center p-6">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+          <p>{t('loading.slideshow')}</p>
         </div>
       </div>
     );

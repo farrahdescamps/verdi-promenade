@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card, CardContent } from "../../components/ui/card";
 import { Header } from "../../components/Header";
@@ -37,8 +37,44 @@ export const PageChoixIntro = (): JSX.Element => {
   const { currentLanguage } = useLanguage();
   const { mapTextColor } = useMapThemeColors();
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
-  const { primaryColor, logoUrl, hotelName } = useTheme();
+  const { primaryColor, secondaryColor, logoUrl, hotelName } = useTheme();
   
+  // Fonction pour convertir hex en RGB
+  const hexToRgb = (color: string) => {
+    const hex = color.replace('#', '');
+    return {
+      r: parseInt(hex.substring(0, 2), 16),
+      g: parseInt(hex.substring(2, 4), 16),
+      b: parseInt(hex.substring(4, 6), 16)
+    };
+  };
+
+  // Fonction pour calculer la luminance relative
+  const getLuminance = (color: string) => {
+    const { r, g, b } = hexToRgb(color);
+    const [R, G, B] = [r, g, b].map((value) => {
+      const normalized = value / 255;
+      return normalized <= 0.03928
+        ? normalized / 12.92
+        : Math.pow((normalized + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+  };
+
+  // Calculer si le logo doit être en blanc selon le contraste
+  const logoVariant = useMemo(() => {
+    const primary = primaryColor || '#690217';
+    const primaryLum = getLuminance(primary);
+    
+    // Si la couleur primaire est trop claire (luminance > 0.5), utiliser le logo blanc
+    if (primaryLum > 0.5) {
+      return { color: '#FFFFFF', useFilter: true };
+    }
+    
+    // Sinon, utiliser la couleur primaire
+    return { color: primary, useFilter: false };
+  }, [primaryColor]);
+
   // Accès aux données de session
   const { sessionData, markThemeSelectionAsCompleted, updateMatchedActivities } = useSession();
   
@@ -337,20 +373,23 @@ export const PageChoixIntro = (): JSX.Element => {
             pointerEvents: isTransitioningOut ? 'none' : 'auto'
           }}
         >
-        {/* Logo en haut - blanc avec animation fade-in */}
+        {/* Logo en haut - blanc ou couleur selon contraste */}
         {logoUrl && (
           <div 
             className="absolute top-[62px] left-1/2 -translate-x-1/2 z-10 animate-[fadeIn_0.6s_ease-out]"
             style={{
               animation: 'fadeIn 0.6s ease-out forwards',
               opacity: 0,
-              animationDelay: '0.2s'
+              animationDelay: '0.2s',
+              ...(logoVariant.useFilter ? {} : { color: logoVariant.color })
             }}
           >
             <LogoDisplay
               logoData={logoUrl}
               className="w-[35%] max-w-[140px] object-contain"
-              style={{ filter: 'brightness(0) invert(1)' }}
+              style={{ 
+                filter: logoVariant.useFilter ? 'brightness(0) invert(1)' : 'none'
+              }}
               alt={hotelName || "Logo"}
             />
           </div>

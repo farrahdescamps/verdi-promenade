@@ -9,6 +9,7 @@ interface POI {
   poi_id?: string;
   activity_id?: string;
   video_url?: string;
+  photo_url?: string;
 }
 
 interface PoiPopupContentProps {
@@ -31,21 +32,30 @@ export const PoiPopupContent: React.FC<PoiPopupContentProps> = ({ poi, onPoiClic
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Video preview if available - positioned on the left */}
-      {poi.video_url && (
+      {/* Media preview - Priorité : photo_url > video_url */}
+      {poi.photo_url && poi.photo_url.trim() !== '' ? (
+        <div className="w-20 h-16 flex-shrink-0 rounded-l-lg overflow-hidden">
+          <img
+            src={poi.photo_url}
+            alt={poi.name}
+            className="w-full h-full object-cover block"
+            style={{ margin: 0, padding: 0, display: 'block' }}
+          />
+        </div>
+      ) : poi.video_url && poi.video_url.trim() !== '' ? (
         <div className="w-20 h-16 flex-shrink-0 rounded-l-lg overflow-hidden">
           <VideoPlayer
             src={poi.video_url}
             className="w-full h-full object-cover block"
             style={{ margin: 0, padding: 0, display: 'block' }}
-            autoPlay={true}
-            loop={true}
-            muted={true}
-            playsInline={true}
+            autoPlay
+            loop
+            muted
+            playsInline
             preload="metadata"
           />
         </div>
-      )}
+      ) : null}
       
       {/* POI name - positioned on the right */}
       <div 

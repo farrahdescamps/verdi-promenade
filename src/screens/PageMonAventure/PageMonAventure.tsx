@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { InteractiveMap } from "../../components/Map";
@@ -167,7 +167,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
   });
 
   // State to control which POIs are displayed on the map
-  const [displayedPois, setDisplayedPois] = useState<Array<{name: string, lat: number, lng: number, color?: string}>>([]);
+  const [displayedPois, setDisplayedPois] = useState<Array<{name: string, lat: number, lng: number, color?: string, poi_id?: string, activity_id?: string, video_url?: string, photo_url?: string}>>([]);
 
   // Function to get icon for a tag
   const getTagIcon = (svgIcon: string, color: string) => {
@@ -216,20 +216,45 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
   // Adapter les couleurs selon le thème de la carte
   const mapTextColor = MAP_THEME === 'light' ? (primaryColor || '#690217') : 'white';
   
-  // Logo : inversé blanc en dark, couleur primaire en light via wrapper
-  const mapLogoContainerStyle = MAP_THEME === 'light' 
-    ? { 
-        // En light: wrapper avec couleur primaire qui force le fill du SVG
-        color: primaryColor || '#690217'
+  const hexToRgb = (color: string) => {
+    const hex = color.replace('#', '');
+    return {
+      r: parseInt(hex.substring(0, 2), 16),
+      g: parseInt(hex.substring(2, 4), 16),
+      b: parseInt(hex.substring(4, 6), 16)
+    };
+  };
+
+  const getLuminance = (color: string) => {
+    const { r, g, b } = hexToRgb(color);
+    const [R, G, B] = [r, g, b].map((value) => {
+      const normalized = value / 255;
+      return normalized <= 0.03928
+        ? normalized / 12.92
+        : Math.pow((normalized + 0.055) / 1.055, 2.4);
+    });
+    return 0.2126 * R + 0.7152 * G + 0.0722 * B;
+  };
+
+  const logoVariant = useMemo(() => {
+    if (MAP_THEME !== 'light') {
+      return { color: '#FFFFFF', useFilter: true };
+    }
+    const primary = primaryColor || '#690217';
+    const secondary = secondaryColor || getLighterColor(primary);
+    const primaryLum = getLuminance(primary);
+    if (primaryLum > 0.75) {
+      const secondaryLum = getLuminance(secondary);
+      if (secondaryLum <= 0.8) {
+        return { color: secondary, useFilter: false };
       }
-    : {};
-  
-  const mapLogoImageStyle = MAP_THEME === 'light'
-    ? {}
-    : { 
-        // En dark: on inverse en blanc
-        filter: 'brightness(0) invert(1)' 
-      };
+      return { color: '#FFFFFF', useFilter: true };
+    }
+    return { color: primary, useFilter: false };
+  }, [primaryColor, secondaryColor]);
+
+  const mapLogoContainerStyle = logoVariant.useFilter ? {} : { color: logoVariant.color };
+  const mapLogoImageStyle = logoVariant.useFilter ? { filter: 'brightness(0) invert(1)' } : { filter: 'none' };
   
   // Dégradé adapté au thème - TOUJOURS utiliser primaryColor (jamais en dur)
   const getPrimaryRGB = () => {
@@ -245,7 +270,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
     ? `linear-gradient(180deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.3) 40%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.85) 100%)`
     : `linear-gradient(180deg, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0) 0%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 0.5) 50%, rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1) 100%)`;
 
-  const activities = tinderResults 
+const baseActivities = tinderResults 
     ? (() => {
         console.log('%c🎯 CONVERSION DES THÈMES TINDER', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', {
           count: tinderResults.themes.length,
@@ -306,18 +331,30 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
         color: primaryColor, // Add color for map pins
         poi_id: poi.poi_id,
         activity_id: validActivityId,
-        video_url: poi.video_url // Add video URL from API for popup preview
+        video_url: (poi as any).video_url,
+        photo_url: (poi as any).photo_url
       }))
     };
   }).filter(activity => activity.id !== ''); // Filter out activities with invalid IDs
 
   console.log('%c📊 ACTIVITÉS FINALES À AFFICHER', 'background: #f59e0b; color: white; font-weight: bold; padding: 4px 8px;', {
-    count: activities.length,
-    activities: activities.map(a => ({ id: a.id, title: a.title, hasImage: !!a.imageSrc }))
+    count: baseActivities.length,
+    activities: baseActivities.map(a => ({ id: a.id, title: a.title, hasImage: !!a.imageSrc }))
   });
 
-  // State to track which card is currently active
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
+
+  const activities = useMemo(() => {
+    if (!baseActivities || baseActivities.length === 0) return [];
+    if (!activeCardId) return baseActivities;
+    const cloned = [...baseActivities];
+    const idx = cloned.findIndex(activity => activity.id === activeCardId);
+    if (idx > 0) {
+      const [active] = cloned.splice(idx, 1);
+      cloned.unshift(active);
+    }
+    return cloned;
+  }, [baseActivities, activeCardId]);
 
   // Handle card click to toggle active state and display POIs
   const handleCardClick = async (clickedCardId: string) => {
@@ -376,7 +413,8 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
           color: themeData.color || primaryColor,
           poi_id: poi.poi_id,
           activity_id: clickedCardId,
-          video_url: poi.video_url
+          video_url: poi.video_url && poi.video_url.trim() !== '' ? poi.video_url : undefined,
+          photo_url: poi.photo_url && poi.photo_url.trim() !== '' ? poi.photo_url : undefined
         }));
 
       console.log('%c🗺️ POIs affichés sur la carte', 'background: #10b981; color: white; font-weight: bold; padding: 4px 8px;', {
@@ -404,6 +442,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
           scrollToPoiId: poi.poi_id,
           poiName: poi.name,
           poiVideoUrl: poi.video_url, // Pass video URL to activity page
+          poiPhotoUrl: poi.photo_url,
           category // Passer la catégorie pour pouvoir revenir à /journey
         }
       });

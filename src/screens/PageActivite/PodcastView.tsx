@@ -23,6 +23,7 @@ interface PodcastViewProps {
   poiId: string;
   activityColor: string;
   poiVideoUrl?: string; // Vidéo du POI en arrière-plan
+  poiPhotoUrl?: string;
   activityId: string;
 }
 
@@ -30,6 +31,7 @@ export const PodcastView: React.FC<PodcastViewProps> = ({
   poiId,
   activityColor,
   poiVideoUrl,
+  poiPhotoUrl,
   activityId
 }) => {
   const { sessionData } = useSession();
@@ -679,7 +681,7 @@ export const PodcastView: React.FC<PodcastViewProps> = ({
 
   return (
     <div className="w-full h-full relative" style={{ backgroundColor: 'var(--color-primary)' }}>
-      {/* Image fixe du POI (comme slideshow mais image unique) */}
+      {/* Image/vidéo du POI */}
       {poiVideoUrl ? (
         <div className="absolute inset-0 z-0" style={{ backgroundColor: 'var(--color-primary)' }}>
           <VideoPlayer
@@ -690,10 +692,16 @@ export const PodcastView: React.FC<PodcastViewProps> = ({
             loop
           />
         </div>
-      ) : (
-        <div className="absolute inset-0 z-0 flex items-center justify-center" style={{ backgroundColor: 'var(--color-primary)' }}>
-          <p className="text-gray-500">{t('common.noVideo')}</p>
+      ) : poiPhotoUrl ? (
+        <div className="absolute inset-0 z-0" style={{ backgroundColor: 'var(--color-primary)' }}>
+          <img
+            src={poiPhotoUrl}
+            alt={poiId}
+            className="w-full h-full object-cover"
+          />
         </div>
+      ) : (
+        <div className="absolute inset-0 z-0" style={{ backgroundColor: activityColor }} />
       )}
 
       

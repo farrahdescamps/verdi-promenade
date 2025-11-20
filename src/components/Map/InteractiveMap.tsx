@@ -14,6 +14,7 @@ interface POI {
   poi_id?: string;
   activity_id?: string;
   video_url?: string;
+  photo_url?: string;
 }
 
 interface InteractiveMapProps {
@@ -69,6 +70,7 @@ export const InteractiveMap: React.FC<InteractiveMapProps> = ({ children, pois =
           scrollToPoiId: poi.poi_id,
           poiName: poi.name,
           poiVideoUrl: poi.video_url,
+          poiPhotoUrl: poi.photo_url,
           // Ajouter l'index du POI pour la slide
           poiIndex: pois.findIndex(p => p.poi_id === poi.poi_id)
         }

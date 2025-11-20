@@ -15,6 +15,7 @@ interface MiniGuideViewProps {
   poiKey: string;
   activityColor: string;
   poiVideoUrl?: string; // Vidéo du POI en arrière-plan
+  poiPhotoUrl?: string;
   onClose: () => void;
 }
 
@@ -22,6 +23,7 @@ export const MiniGuideView: React.FC<MiniGuideViewProps> = ({
   poiKey,
   activityColor,
   poiVideoUrl,
+  poiPhotoUrl,
   onClose
 }) => {
   const { t } = useTranslation();
@@ -200,7 +202,7 @@ export const MiniGuideView: React.FC<MiniGuideViewProps> = ({
   return (
     <div className="relative w-full h-full">
       {/* Vidéo du POI en arrière-plan */}
-      {poiVideoUrl && (
+      {poiVideoUrl ? (
         <VideoPlayer
           src={poiVideoUrl}
           className="w-full h-full object-cover"
@@ -209,6 +211,14 @@ export const MiniGuideView: React.FC<MiniGuideViewProps> = ({
           loop
           playsInline
         />
+      ) : poiPhotoUrl ? (
+        <img
+          src={poiPhotoUrl}
+          alt={poiKey}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <div className="w-full h-full" style={{ backgroundColor: activityColor }} />
       )}
 
       {/* Overlay sombre */}
