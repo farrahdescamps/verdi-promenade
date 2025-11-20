@@ -1023,12 +1023,8 @@ const PageActivite: React.FC = () => {
               </div>
 
               <p className="text-sm text-[#00000099] font-['Inter-Regular',Helvetica] tracking-[-0.17px] mt-2">
-                {/* Si c'est le premier slide (index 0 = vidéo du POI), afficher la description générale
-                    Sinon, afficher la caption de la photo actuelle (en tenant compte du décalage de 1) */}
-                {currentSlideshowPoiIndex === 0 
-                  ? (activityDetails.pois.find(p => p.poi_id === slideshowDetails.poi_id)?.description || '')
-                  : (slideshowDetails.slideshow?.photos?.[currentSlideshowPoiIndex - 1]?.caption || '')
-                }
+                {/* Afficher directement la caption de la photo actuelle (plus de vidéo générique) */}
+                {slideshowDetails.slideshow?.photos?.[currentSlideshowPoiIndex]?.caption || ''}
               </p>
 
               {/* Boutons "J'ai une question" + Map */}

@@ -51,19 +51,10 @@ export const SlideshowView: React.FC<SlideshowViewProps> = ({
       const data = await fetchSlideshowDetails(activityId, poiId, currentLanguage);
       setSlideshowDetails(data);
       
-      // Créer les slides combinés (vidéo POI + photos)
+      // Créer les slides avec uniquement les photos du slideshow (pas de vidéo/photo générique)
       const slides = [];
       
-      // Ajouter la vidéo du POI en premier si disponible
-      if (poiVideoUrl && poiVideoUrl.trim() !== '') {
-        slides.push({
-          type: 'video' as const,
-          url: poiVideoUrl,
-          caption: poiDescription || 'Vidéo du POI'
-        });
-      }
-      
-      // Ajouter les photos du slideshow
+      // Ajouter uniquement les photos du slideshow
       if (data.slideshow.photos) {
         data.slideshow.photos.forEach(photo => {
           slides.push({
