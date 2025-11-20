@@ -15,7 +15,7 @@ interface MenuItem {
   category?: string;
 }
 
-// Mapping des types vers les configurations de menu
+// Mapping des types vers les configurations de menu.
 const TYPE_TO_MENU_CONFIG: Record<string, Omit<MenuItem, 'id' | 'type' | 'category'>> = {
   'hotel': {
     icon: "/img/hotel-icon.svg",
