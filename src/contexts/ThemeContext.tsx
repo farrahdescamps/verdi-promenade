@@ -6,6 +6,7 @@ interface ThemeContextType {
   primaryColor: string;
   secondaryColor: string;
   hotelName: string;
+  regionName: string | null;
   logoUrl: string | null;
   logoGroupUrl: string | null;
   mainPhotoUrl: string | null;
@@ -24,6 +25,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [primaryColor, setPrimaryColor] = useState<string>(DEFAULT_PRIMARY_COLOR);
   const [secondaryColor, setSecondaryColor] = useState<string>(DEFAULT_SECONDARY_COLOR);
   const [hotelName, setHotelName] = useState<string>('');
+  const [regionName, setRegionName] = useState<string | null>(null);
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [logoGroupUrl, setLogoGroupUrl] = useState<string | null>(null);
   const [mainPhotoUrl, setMainPhotoUrl] = useState<string | null>(null);
@@ -68,6 +70,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         // Mettre à jour les informations de l'hôtel
         console.log('%c📝 THEME - Mise à jour état...', 'background: #8b5cf6; color: white; padding: 4px 8px;');
         setHotelName(hotelData.hotel_name || '');
+        setRegionName(hotelData.region || null);
         setLogoUrl(hotelData.logo_url);
         setLogoGroupUrl(hotelData.logo_group_url);
         setMainPhotoUrl(hotelData.main_photo_url);
@@ -103,6 +106,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
         primaryColor,
         secondaryColor,
         hotelName,
+        regionName,
         logoUrl,
         logoGroupUrl,
         mainPhotoUrl,

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '../../components/ui/button';
 import { Badge } from '../../components/ui/badge';
@@ -100,11 +100,11 @@ const PageActivite: React.FC = () => {
   } | null>(null);
 
   // États pour le swipe
-  const [swipeStartX, setSwipeStartX] = useState(0);
-  const [swipeStartY, setSwipeStartY] = useState(0);
-  const [isSwipeActive, setIsSwipeActive] = useState(false);
   const [hasManualSwipe, setHasManualSwipe] = useState(false);
   const [videoKey, setVideoKey] = useState(0);
+  
+  // Ref pour l'élément swipable
+  const swipeAreaRef = useRef<HTMLDivElement>(null);
   
 
   // Charger les détails de l'activité
@@ -327,41 +327,87 @@ const PageActivite: React.FC = () => {
     goToSlide(newIndex, true);
   }, [currentSlideIndex, activityDetails?.pois, isTransitioning, goToSlide]);
 
-  // Gestion du swipe
-  const handleSwipeStart = useCallback((e: React.TouchEvent | React.MouseEvent) => {
-    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
-    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
-    
-    setSwipeStartX(clientX);
-    setSwipeStartY(clientY);
-    setIsSwipeActive(true);
-  }, []);
+  // Gestion du swipe avec event listeners natifs (pour éviter le problème passive)
+  useEffect(() => {
+    const swipeArea = swipeAreaRef.current;
+    if (!swipeArea || !activityDetails?.pois || activityDetails.pois.length <= 1) return;
 
-  const handleSwipeEnd = useCallback((e: React.TouchEvent | React.MouseEvent) => {
-    if (!isSwipeActive || !activityDetails?.pois || activityDetails.pois.length <= 1) {
-      setIsSwipeActive(false);
-      return;
-    }
+    let startX = 0;
+    let startY = 0;
+    let isHorizontalSwipe = false;
+    let isVerticalScroll = false;
 
-    const clientX = 'changedTouches' in e ? e.changedTouches[0].clientX : e.clientX;
-    const clientY = 'changedTouches' in e ? e.changedTouches[0].clientY : e.clientY;
-    
-    const deltaX = clientX - swipeStartX;
-    const deltaY = clientY - swipeStartY;
-    
-    // Vérifier que c'est un swipe horizontal (plus horizontal que vertical)
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 50) {
-        if (deltaX > 0) {
-          // Swipe vers la droite - slide précédent
-        goToPreviousSlide();
-        } else {
-          // Swipe vers la gauche - slide suivant
-        goToNextSlide();
+    const handleTouchStart = (e: TouchEvent) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      isHorizontalSwipe = false;
+      isVerticalScroll = false;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      
+      const deltaX = Math.abs(currentX - startX);
+      const deltaY = Math.abs(currentY - startY);
+      
+      // Attendre un mouvement suffisant pour décider (10px)
+      if (deltaX < 10 && deltaY < 10) return;
+      
+      // Si déjà décidé que c'est un scroll vertical, laisser passer
+      if (isVerticalScroll) return;
+      
+      // Si déjà décidé que c'est horizontal, continuer à bloquer le scroll
+      if (isHorizontalSwipe) {
+        e.preventDefault();
+        return;
       }
-    }
+      
+      // Décider maintenant : horizontal si deltaX est clairement supérieur
+      if (deltaX > deltaY) {
+        isHorizontalSwipe = true;
+        e.preventDefault();
+      } else {
+        // C'est un scroll vertical, ne plus interférer
+        isVerticalScroll = true;
+      }
+    };
 
-    setIsSwipeActive(false);
-  }, [isSwipeActive, swipeStartX, swipeStartY, activityDetails?.pois, goToPreviousSlide, goToNextSlide]);
+    const handleTouchEnd = (e: TouchEvent) => {
+      // Ne traiter que si c'était un swipe horizontal intentionnel
+      if (!isHorizontalSwipe) {
+        return;
+      }
+
+      const endX = e.changedTouches[0].clientX;
+      const deltaX = endX - startX;
+      
+      // Swipe horizontal avec distance suffisante
+      if (Math.abs(deltaX) > 50) {
+        // Marquer comme swipe manuel pour stopper l'auto-rotation
+        setHasManualSwipe(true);
+        
+        if (deltaX > 0) {
+          // Swipe vers la droite → slide suivant
+          goToNextSlide();
+        } else {
+          // Swipe vers la gauche → slide précédent
+          goToPreviousSlide();
+        }
+      }
+    };
+
+    // Attacher les event listeners avec { passive: false } sur touchmove uniquement
+    swipeArea.addEventListener('touchstart', handleTouchStart, { passive: true });
+    swipeArea.addEventListener('touchmove', handleTouchMove, { passive: false });
+    swipeArea.addEventListener('touchend', handleTouchEnd, { passive: true });
+
+    return () => {
+      swipeArea.removeEventListener('touchstart', handleTouchStart);
+      swipeArea.removeEventListener('touchmove', handleTouchMove);
+      swipeArea.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [activityDetails?.pois, goToPreviousSlide, goToNextSlide, setHasManualSwipe]);
 
   // Gestion du slideshow spécifique (depuis un POI)
   const handleSlideshowClick = useCallback(async (poiId: string, skipSlideIndexUpdate = false) => {
@@ -614,13 +660,14 @@ const PageActivite: React.FC = () => {
 
   // Vue normale de l'activité avec slideshow global
   return (
-    <div className="w-full h-screen overflow-y-auto bg-gray-50">
+    <div 
+      data-scroll-zone="root-scrollable"
+      className="w-full h-screen overflow-y-auto bg-gray-50">
       {/* Header fixe avec slideshow global */}
         <div className={`fixed left-0 right-0 rounded-b-[20px] overflow-hidden`}
         style={{ 
           top: 'var(--sat)',
           backgroundColor: 'var(--color-primary)', 
-          touchAction: 'pan-y',
           transition: 'height 500ms ease-in-out',
           height: isPodcastPoiActive 
             ? '60vh' 
@@ -630,11 +677,7 @@ const PageActivite: React.FC = () => {
                 ? '75vh' 
                 : '280px',
           zIndex: 100 // Header TOUJOURS au-dessus du contenu (était z-10, augmenté pour clarté)
-        }}
-        onTouchStart={handleSwipeStart}
-        onTouchEnd={handleSwipeEnd}
-        onMouseDown={handleSwipeStart}
-        onMouseUp={handleSwipeEnd}>
+        }}>
           <div className="relative w-full h-full" style={{ backgroundColor: 'var(--color-primary)' }}>
           
           {/* Slideshow POI (quand isSlideshowActive est true) */}
@@ -677,6 +720,10 @@ const PageActivite: React.FC = () => {
             activityDetails.pois && activityDetails.pois.length > 0 ? (
             <>
               {/* Vidéo du POI actuel (ou photo en fallback) */}
+              <div
+                ref={swipeAreaRef}
+                className="w-full h-full relative"
+              >
                 {(() => {
               const currentPoi = activityDetails.pois[currentSlideIndex];
               const hasPoiVideo = currentPoi && currentPoi.video_url && currentPoi.video_url.trim() !== '';
@@ -705,6 +752,7 @@ const PageActivite: React.FC = () => {
                   />
               );
                 })()}
+              </div>
               
 
             {/* Bullets de navigation - masqués en mode podcast et mini-guide */}
@@ -737,7 +785,7 @@ const PageActivite: React.FC = () => {
           )}
           
           {/* Overlay sombre */}
-          <div className="absolute inset-0 bg-black/20"></div>
+          <div className="absolute inset-0 bg-black/20" style={{ pointerEvents: 'none' }}></div>
           
           {/* Logo en haut de l'en-tête */}
           {logoUrl && (
@@ -895,7 +943,9 @@ const PageActivite: React.FC = () => {
         </div>
 
       {/* Contenu principal - DOIT commencer EN DESSOUS du header */}
-        <div className="transition-all duration-500 ease-in-out w-full max-w-[375px] mx-auto"
+        <div 
+          data-scroll-zone="content-wrapper"
+          className="transition-all duration-500 ease-in-out w-full max-w-[375px] mx-auto"
         style={{ 
           // Padding pour que le contenu commence APRÈS le header fixe
           paddingTop: isPodcastPoiActive 
@@ -908,7 +958,9 @@ const PageActivite: React.FC = () => {
           paddingBottom: 'max(5rem, calc(5rem + var(--sab)))'
         }}>
           {/* Contenu blanc avec background opaque - z-index inférieur au header */}
-          <div className="relative w-full" style={{ 
+          <div 
+            data-scroll-zone="white-content"
+            className="relative w-full" style={{ 
             paddingTop: '30px', 
             paddingLeft: '20px', 
             paddingRight: '20px', 

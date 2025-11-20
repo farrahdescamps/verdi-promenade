@@ -92,16 +92,29 @@ export const PageEnjoyStay: React.FC = () => {
 
   // Traduction des noms de catégories
   const getCategoryTitle = (categoryKey: string): string => {
+    // L'API retourne déjà les noms formatés correctement (ex: "Restauration", "Bien-être")
+    // On normalise la clé pour faire le mapping si nécessaire
+    const normalizedKey = categoryKey.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, '-').replace(/&/g, '');
+    
     const translations: Record<string, string> = {
       'restauration': 'Restauration',
       'plage': 'Plage',
       'bien-etre': 'Bien-être',
+      'bienetre': 'Bien-être',
       'animations': 'Animations',
       'services': 'Services',
       'business': 'Business',
-      'urgence': 'Informations utiles'
+      'urgence': 'Urgence & bon à savoir',
+      'urgence-bon-a-savoir': 'Urgence & bon à savoir'
     };
-    return translations[categoryKey] || formatTitle(categoryKey);
+    
+    // Si la clé existe dans les traductions, l'utiliser
+    if (translations[normalizedKey]) {
+      return translations[normalizedKey];
+    }
+    
+    // Sinon, utiliser directement la clé de l'API (déjà formatée)
+    return categoryKey;
   };
 
   // Récupérer les catégories avec leurs items (filtrer les items vides)

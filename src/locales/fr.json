@@ -25,7 +25,7 @@
     "yourWay": "À votre façon!",
     "enjoyYourStay": "Profitez de votre séjour",
     "chooseRestaurant": "Choisissez votre restaurant",
-    "discoverCity": "Découvrez Grande Canarie",
+    "discoverCity": "Découvrez {{regionName}}",
     "bookExperience": "Réservez une expérience",
     "anyQuestion": "Une question ?",
     "exploreAtOwnPace": "Vous préférez explorer notre hôtel à votre rythme ?",
@@ -33,7 +33,7 @@
     "downloadGuide": "Téléchargez notre guide",
     "restaurant": "Trouvez votre restaurant!",
     "experience": "Réservez une expérience!",
-    "discover": "Découvrez Grande Canarie!",
+    "discover": "Découvrez {{regionName}}!",
     "all": "Tout"
   },
   "language": {

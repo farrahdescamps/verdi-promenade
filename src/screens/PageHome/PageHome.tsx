@@ -45,7 +45,7 @@ const TYPE_TO_MENU_CONFIG: Record<string, Omit<MenuItem, 'id' | 'type' | 'catego
 
 export const PageHome = (): JSX.Element => {
   const { t } = useTranslation();
-  const { logoUrl, logoGroupUrl, hotelName, primaryColor, secondaryColor, mainPhotoUrl, isLoading: isLoadingTheme } = useTheme();
+  const { logoUrl, hotelName, regionName, primaryColor, secondaryColor, mainPhotoUrl, isLoading: isLoadingTheme } = useTheme();
   const { themes, isLoadingThemes, loadThemes } = useSession();
   const [customerName, setCustomerName] = useState<string | null>(null);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -397,7 +397,7 @@ export const PageHome = (): JSX.Element => {
                     }}
                   />
                   <span className="[font-family:'Inter',Helvetica] font-normal text-black text-sm tracking-[-0.17px]">
-                    {t(item.textKey)}
+                    {t(item.textKey, { regionName: regionName || 'la région' })}
                   </span>
                 </div>
                 <img

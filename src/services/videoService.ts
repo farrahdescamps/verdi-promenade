@@ -16,6 +16,7 @@ export interface HotelVideoData {
   success: boolean;
   hotel_id: string;
   hotel_name: string;
+  region?: string; // Nom de la région (ex: "Grande Canarie", "Malte") - À ajouter côté backend
   logo_url: string | null;
   logo_group_url: string | null;
   main_photo_url: string | null;

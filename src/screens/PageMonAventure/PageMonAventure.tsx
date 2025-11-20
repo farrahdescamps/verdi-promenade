@@ -47,7 +47,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
   const { sessionData } = useSession();
   const navigate = useNavigate();
   const location = useLocation();
-  const { primaryColor, secondaryColor, logoUrl, hotelName } = useTheme();
+  const { primaryColor, secondaryColor, logoUrl, hotelName, regionName } = useTheme();
   const { currentLanguage } = useLanguage();
   
   // Récupérer les résultats Tinder et la catégorie depuis le state de navigation
@@ -417,7 +417,7 @@ export const PageMonAventure = (): JSX.Element => { // Renamed to avoid conflict
     const categoryTitles: Record<string, string> = {
       'restaurant': t('home.restaurant') || 'Find your restaurant!',
       'activity': t('home.experience') || 'Book your experience!',
-      'itinerary': t('home.discover') || 'Découvrez Puerto de Mogan!'
+      'itinerary': t('home.discover', { regionName: regionName || 'la région' }) || 'Découvrez la région!'
     };
     
     return categoryTitles[category] || t('journey.title');
