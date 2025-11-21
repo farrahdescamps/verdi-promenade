@@ -37,7 +37,7 @@ export const PageChoixIntro = (): JSX.Element => {
   const { currentLanguage } = useLanguage();
   const { mapTextColor } = useMapThemeColors();
   const [isCreatingConversation, setIsCreatingConversation] = useState(false);
-  const { primaryColor, secondaryColor, logoUrl, hotelName } = useTheme();
+  const { primaryColor, secondaryColor, logoUrl, logoGroupUrl, hotelName } = useTheme();
   
   // Fonction pour convertir hex en RGB
   const hexToRgb = (color: string) => {
@@ -350,6 +350,16 @@ export const PageChoixIntro = (): JSX.Element => {
     setShowTalkWithOceaneModal(false);
   };
 
+  // Toujours afficher exclusivement le logo principal (logoUrl). Pas de fallback.
+  console.log('%c🎯 TINDER LOGO DEBUG', 'background: #3b82f6; color: white; font-weight: bold; padding: 4px 8px;', {
+    logoUrlPreview: logoUrl ? `${logoUrl.substring(0, 60)}...` : null,
+    hasLogoUrl: !!logoUrl,
+    logoGroupUrlPreview: logoGroupUrl ? `${logoGroupUrl.substring(0, 60)}...` : null,
+    hasLogoGroupUrl: !!logoGroupUrl
+  });
+
+  const tinderLogoUrl = logoUrl || null;
+
   // Mode Tinder : affichage simplifié avec fond couleur primaire
   if (category) {
     return (
@@ -373,22 +383,24 @@ export const PageChoixIntro = (): JSX.Element => {
             pointerEvents: isTransitioningOut ? 'none' : 'auto'
           }}
         >
-        {/* Logo en haut - blanc ou couleur selon contraste */}
-        {logoUrl && (
+        {/* Logo en haut - toujours blanc en mode Tinder pour garantir le contraste */}
+        {tinderLogoUrl && (
           <div 
-            className="absolute top-[62px] left-1/2 -translate-x-1/2 z-10 animate-[fadeIn_0.6s_ease-out]"
+            className="absolute top-[62px] left-1/2 -translate-x-1/2 z-10 flex items-center justify-center"
             style={{
               animation: 'fadeIn 0.6s ease-out forwards',
-              opacity: 0,
+              opacity: 1,
               animationDelay: '0.2s',
-              ...(logoVariant.useFilter ? {} : { color: logoVariant.color })
+              color: '#FFFFFF',
+              borderRadius: '12px',
+              padding: '8px'
             }}
           >
             <LogoDisplay
-              logoData={logoUrl}
+              logoData={tinderLogoUrl}
               className="w-[35%] max-w-[140px] object-contain"
               style={{ 
-                filter: logoVariant.useFilter ? 'brightness(0) invert(1)' : 'none'
+                filter: 'brightness(0) saturate(100%) invert(100%)'
               }}
               alt={hotelName || "Logo"}
             />

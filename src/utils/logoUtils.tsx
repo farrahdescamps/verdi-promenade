@@ -15,12 +15,17 @@ export const LogoDisplay: React.FC<LogoDisplayProps> = ({ logoData, className = 
   const isSvgString = logoData.trim().startsWith('<svg');
 
   if (isSvgString) {
+    // Inject width/height styles to ensure the SVG fills its container
+    const normalizedSvg = logoData.replace(
+      '<svg',
+      '<svg style="width:100%;height:100%;display:block"'
+    );
     // Afficher le SVG inline
     return (
       <div
         className={className}
         style={style}
-        dangerouslySetInnerHTML={{ __html: logoData }}
+        dangerouslySetInnerHTML={{ __html: normalizedSvg }}
       />
     );
   } else {
