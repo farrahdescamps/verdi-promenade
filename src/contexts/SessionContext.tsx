@@ -12,7 +12,7 @@ import {
   getSession
 } from '../services/sessionService';
 import { useLanguage } from './LanguageContext';
-import { LE_HAVRE_CITY_ID } from '../constants/cities';
+import { DEFAULT_CITY_ID } from '../constants/cities';
 import { Theme, fetchThemes } from '../services/themesService';
 
 interface SessionContextType {
@@ -71,7 +71,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
         }
       }
 
-      const session = await ensureActiveSession(currentLanguage, LE_HAVRE_CITY_ID);
+      const session = await ensureActiveSession(currentLanguage, DEFAULT_CITY_ID);
       
       // Log de la session pour debug
 
@@ -95,7 +95,7 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
       clearStoredSessionInfo();
       setSessionData(null);
 
-      const session = await ensureActiveSession(currentLanguage, LE_HAVRE_CITY_ID);
+      const session = await ensureActiveSession(currentLanguage, DEFAULT_CITY_ID);
       
 
       setSessionData(session);

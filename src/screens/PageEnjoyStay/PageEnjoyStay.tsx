@@ -402,7 +402,7 @@ export const PageEnjoyStay: React.FC = () => {
                             fontFamily: 'Inter'
                           }}
                         >
-                          Voir plus →
+                          {t('common.seeMore')} →
                         </button>
                       </div>
 
@@ -479,7 +479,7 @@ export const PageEnjoyStay: React.FC = () => {
                       fontFamily: 'Inter'
                     }}
                   >
-                    Voir plus →
+                    {t('common.seeMore')} →
                   </button>
                 </div>
 

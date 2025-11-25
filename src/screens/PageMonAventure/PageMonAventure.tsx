@@ -747,7 +747,7 @@ const baseActivities = tinderResults
                 transition: 'all 0.2s ease'
               }}
             >
-              {isExpanded ? 'Voir moins' : 'Voir plus'}
+              {isExpanded ? t('common.seeLess') : t('common.seeMore')}
             </button>
           )}
         </div>

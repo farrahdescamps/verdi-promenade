@@ -14,18 +14,20 @@
     "return": "Retour",
     "noVideo": "Aucune vidéo disponible",
     "noPOI": "Aucun point d'intérêt disponible pour cette activité",
-    "minPodcast": "min podcast"
+    "minPodcast": "min podcast",
+    "seeMore": "Voir plus",
+    "seeLess": "Voir moins"
   },
   "splash": {
     "title": "Océane",
-    "subtitle": "Le Havre autrement",
+    "subtitle": "autrement",
     "yourExperience": "Votre expérience!"
   },
   "home": {
     "yourWay": "À votre façon!",
     "enjoyYourStay": "Profitez de votre séjour",
     "chooseRestaurant": "Choisissez votre restaurant",
-    "discoverCity": "Découvrez {{regionName}}",
+    "discoverCity": "Découvrez Malte",
     "bookExperience": "Réservez une expérience",
     "anyQuestion": "Une question ?",
     "exploreAtOwnPace": "Vous préférez explorer notre hôtel à votre rythme ?",
@@ -33,11 +35,10 @@
     "downloadGuide": "Téléchargez notre guide",
     "restaurant": "Trouvez votre restaurant!",
     "experience": "Réservez une expérience!",
-    "discover": "Découvrez {{regionName}}!",
+    "discover": "Découvrez Malte!",
     "all": "Tout"
   },
   "language": {
-    "title1": "Le Havre,",
     "title2": "autrement !"
   },
   "login": {
@@ -64,7 +65,7 @@
   },
   "onboarding": {
     "accountCreated": "Votre compte est créé.",
-    "subtitle": "Vous pouvez maintenant explorer Le Havre en toute tranquillité !",
+    "subtitle": "Vous pouvez maintenant explorer la région en toute tranquillité !",
     "startAdventure": "Commence ton aventure"
   },
   "passwordReset": {
@@ -118,7 +119,7 @@
     "viewSuggestionsAriaLabel": "Voir les suggestions d'activités",
     "personalizeMoreAriaLabel": "Personnaliser davantage avec Océane",
     "itineraryReady": "Votre itinéraire personnalisé est prêt.",
-    "goodVisit": "Bonne visite du Havre !",
+    "goodVisit": "Bonne visite !",
     "viewItinerary": "Voir mon itinéraire",
     "askNewQuestionButton": "Posez-moi votre question",
     "haveQuestion": "J'ai une question",

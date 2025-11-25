@@ -5,7 +5,7 @@ import { generatePodcast, fetchPodcastHistory, PodcastGenerationResponse, Podcas
 import { useSession } from '../../contexts/SessionContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTranslation } from '../../locales';
-import { LE_HAVRE_CITY_ID } from '../../constants/cities';
+import { DEFAULT_CITY_ID } from '../../constants/cities';
 import { ClockIcon, ParlerIcon } from '../../components/icons';
 import { useTheme } from '../../contexts/ThemeContext';
 import { LogoDisplay } from '../../utils/logoUtils';
@@ -457,7 +457,7 @@ export const PodcastView: React.FC<PodcastViewProps> = ({
         sessionData.session_id,
         'custom_podcast',
         currentLanguage,
-        LE_HAVRE_CITY_ID,
+        DEFAULT_CITY_ID,
         {
           poiId: poiId,
           activityId: activityId,

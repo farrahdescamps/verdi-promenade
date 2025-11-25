@@ -8,7 +8,7 @@ import { TalkWithOceaneModal } from "../../components/TalkWithOceaneModal";
 import { useTranslation } from "../../locales";
 import { useLanguage } from "../../contexts/LanguageContext";
 import { fetchThemes, Theme } from "../../services/themeService";
-import { LE_HAVRE_CITY_ID } from "../../constants/cities";
+import { DEFAULT_CITY_ID } from "../../constants/cities";
 import { useSession } from "../../contexts/SessionContext";
 import { sendHybridMatch } from "../../services/activityService";
 import { MatchedActivity } from "../../services/sessionService";
@@ -153,7 +153,7 @@ export const PageChoixIntro = (): JSX.Element => {
         } else {
           // Sinon, charger les thèmes par défaut (flux original)
           console.log('📥 Chargement des thèmes classiques (pas de category)');
-          const fetchedThemes = await fetchThemes(LE_HAVRE_CITY_ID, currentLanguage);
+          const fetchedThemes = await fetchThemes(DEFAULT_CITY_ID, currentLanguage);
           setThemes(fetchedThemes);
         }
       } catch (error) {
@@ -291,7 +291,7 @@ export const PageChoixIntro = (): JSX.Element => {
 
         const hybridMatchData = {
           session_id: sessionData.session_id,
-          city_id: LE_HAVRE_CITY_ID,
+          city_id: DEFAULT_CITY_ID,
           liked_themes: sessionData.liked_themes,
           lang: currentLanguage,
         };
@@ -320,7 +320,7 @@ export const PageChoixIntro = (): JSX.Element => {
 
       const hybridMatchData = {
         session_id: sessionData.session_id,
-        city_id: LE_HAVRE_CITY_ID,
+        city_id: DEFAULT_CITY_ID,
         liked_themes: sessionData.liked_themes || [],
         lang: currentLanguage,
       };
